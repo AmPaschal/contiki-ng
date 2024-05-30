@@ -1,0 +1,24 @@
+#
+# Define CBMC Compilers, alter flags
+#
+
+CC=goto-cc
+AS=goto-as
+LD=goto-cc  # Note, goto-cc MUST be used for linking!
+
+# Update the CFLAGS to include out special include directory
+
+CFLAGS += $(addprefix -I,$(CONTIKI)/cbmc/include)
+
+# Update CFLAGS to new function name:
+
+CFLAGS += --function harness
+
+#
+# Define rule to run CBMC
+#
+
+bcbmc: $(CONTIKI_PROJECT)
+
+rcbmc: bcbmc
+	cbmc --function harness build/$(TARGET)/*.$(TARGET)

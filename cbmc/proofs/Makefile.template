@@ -1,0 +1,19 @@
+# Specifies the default target, can set to anything
+default: rcbmc
+
+# Harness files you wish to build, omit the extension!
+# YOu may provide multiple space-separated files for this
+CONTIKI_PROJECT = file1 file2
+
+# Defines the 'all' target, necessary for integration with Contiki-ng
+all: $(CONTIKI_PROJECT)
+
+# Defines the root of the project.
+# Be aware of how many directories deep you go!
+CONTIKI = ../../../..
+
+# Include the Contiki-ng build file
+include $(CONTIKI)/Makefile.include
+
+# Include our special CBMC build file
+include ../../Makefile.include

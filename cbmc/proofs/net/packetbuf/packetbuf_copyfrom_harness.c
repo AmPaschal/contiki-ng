@@ -1,7 +1,7 @@
+#define NETSTACK_CONF_MAC MAC_CONF_WITH_NULLMAC
+
 #include "contiki.h"
 #include "net/packetbuf.h"
-
-#include "dummy_proc.h"
 
 void harness() {
 
@@ -10,11 +10,9 @@ void harness() {
 
     // Define char array of length:
 
-    char arr[10];
+    char arr[length];
 
     // Violate the array:
-
-    char thing = arr[500];
 
     // Send values to function:
 

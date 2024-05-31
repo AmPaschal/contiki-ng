@@ -1,19 +1,9 @@
 # Specifies the default target, can set to anything
-default: rcbmc
+default: report
 
-# Harness files you wish to build, omit the extension!
-# YOu may provide multiple space-separated files for this
-CONTIKI_PROJECT = packetbuf_copyfrom_harness
-
-# Defines the 'all' target, necessary for integration with Contiki-ng
-all: $(CONTIKI_PROJECT)
-
-# Defines the root of the project.
-# Be aware of how many directories deep you go!
-CONTIKI = ../../../..
-
-# Include the Contiki-ng build file
-include $(CONTIKI)/Makefile.include
+HARNESS = packetbuf_copyfrom_harness.c
+LINK = $(ROOT)/os/net/packetbuf.c
+ROOT = ../../../..
 
 # Include our special CBMC build file
 include ../../Makefile.include

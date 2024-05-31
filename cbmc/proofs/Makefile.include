@@ -1,24 +1,63 @@
+
+CC_OUTPUT ?= build.goto
+
 #
-# Define CBMC Compilers, alter flags
+# Programs to utilize
 #
 
-CC=goto-cc
-AS=goto-as
-LD=goto-cc  # Note, goto-cc MUST be used for linking!
+GOTO_CC = goto-cc
+GOTO_INST = goto-instrument
+CBMC = cbmc
+VIEWER = cbmc-viewer
 
-# Update the CFLAGS to include out special include directory
+#
+# Build arguments
+#
 
-CFLAGS += $(addprefix -I,$(CONTIKI)/cbmc/include)
+INCLUDE = \
+	-I$(ROOT)/os \
+	-I$(ROOT)/arch/cpu/native \
+	-I$(ROOT)/arch/platform/native \
+	# empty
 
-# Update CFLAGS to new function name:
+CC_ARGS = \
+	--function harness
 
-CFLAGS += --function harness
+CBMC_ARGS = \
+	--bounds-check \
+	--function harness \
+	# empty
 
 #
 # Define rule to run CBMC
 #
 
-bcbmc: $(CONTIKI_PROJECT)
+bcbmc:
+	mkdir build
+	goto-cc -o build/$(CC_OUTPUT) $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_MAC=MAC_CONF_WITH_NULLMAC $(HARNESS) $(LINK)
 
-rcbmc: bcbmc
-	cbmc --function harness build/$(TARGET)/*.$(TARGET)
+pcmbc: bcbmc
+
+cbmc: bcbmc
+	-cbmc $(CBMC_ARGS) --unwinding-assertions --trace --xml-ui build/$(CC_OUTPUT) > build/cbmc.xml
+
+property: bcbmc
+	cbmc $(CBMC_ARGS) --unwinding-assertions --show-properties --xml-ui build/$(CC_OUTPUT) > build/property.xml
+
+coverage: bcbmc
+	cbmc $(CBMC_ARGS) --cover location --xml-ui build/$(CC_OUTPUT) > build/coverage.xml
+
+report: cbmc property coverage
+	mkdir report
+	$(VIEWER) \
+	--goto build/$(ENTRY).goto \
+	--reportdir report \
+	--result build/cbmc.xml \
+	--property build/property.xml \
+	--coverage build/coverage.xml
+
+clean:
+	rm -r build
+
+veryclean: clean
+	rm -r report

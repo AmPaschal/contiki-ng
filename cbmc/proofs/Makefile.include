@@ -1,5 +1,5 @@
-
-CC_OUTPUT ?= build.goto
+# Specifies the default target, report
+default: report
 
 #
 # Programs to utilize
@@ -14,50 +14,80 @@ VIEWER = cbmc-viewer
 # Build arguments
 #
 
+# Include directories to consider
 INCLUDE = \
 	-I$(ROOT)/os \
 	-I$(ROOT)/arch/cpu/native \
 	-I$(ROOT)/arch/platform/native \
 	# empty
 
+# Arguments to pass to GOTO_CC
 CC_ARGS = \
-	--function harness
-
-CBMC_ARGS = \
-	--bounds-check \
 	--function harness \
 	# empty
 
+# Arguments to pass to CBMC
+CBMC_ARGS = \
+	--function harness \
+	--nondet-static \
+	--flush \
+	--bounds-check \
+	--pointer-check \
+	--div-by-zero-check \
+	# empty
+
+# Name of output file
+CC_OUTPUT ?= build.goto
+
+# Network defines, we set the marco to the provided value
+ROUTE_CONF ?= ROUTING_CONF_NULLROUTING
+NET_CONF ?= NETSTACK_CONF_WITH_NULLNET
+MAC_CONF ?= MAC_CONF_WITH_NULLMAC
+
 #
-# Define rule to run CBMC
+# CBMC Rules
 #
 
+# Creates build directories, builds all specific files
 bcbmc:
-	mkdir build
-	goto-cc -o build/$(CC_OUTPUT) $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_MAC=MAC_CONF_WITH_NULLMAC $(HARNESS) $(LINK)
+	mkdir -p build
+	goto-cc -o build/$(CC_OUTPUT) $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_ROUTING=$(ROUTE_CONF) -DNETSTACK_CONF_NETWORK=$(NET_CONF) -DNETSTACK_CONF_MAC=$(MAC_CONF) $(HARNESS) $(LINK)
 
-pcmbc: bcbmc
+# Preform extra processing on output, removing unnecessary functions and variables
+pcbmc: bcbmc
+	cp build/$(CC_OUTPUT) build/$(CC_OUTPUT).preclean
+	$(GOTO_INST) --drop-unused-functions build/$(CC_OUTPUT).preclean build/$(CC_OUTPUT).clean1
+	$(GOTO_INST) --slice-global-inits build/$(CC_OUTPUT).clean1 build/$(CC_OUTPUT).clean2
+	$(GOTO_INST) --drop-unused-functions build/$(CC_OUTPUT).clean2 build/$(CC_OUTPUT).clean3
+	cp build/$(CC_OUTPUT).clean3 build/$(CC_OUTPUT)
 
-cbmc: bcbmc
+# Preform CBMC validation check (ignore return code)
+cbmc: pcbmc
 	-cbmc $(CBMC_ARGS) --unwinding-assertions --trace --xml-ui build/$(CC_OUTPUT) > build/cbmc.xml
 
+# Compute properties of goto binary
 property: bcbmc
 	cbmc $(CBMC_ARGS) --unwinding-assertions --show-properties --xml-ui build/$(CC_OUTPUT) > build/property.xml
 
+# Preform code coverage of CBMC binary
 coverage: bcbmc
 	cbmc $(CBMC_ARGS) --cover location --xml-ui build/$(CC_OUTPUT) > build/coverage.xml
 
+# Generate HTML report using cbcm-viewer tool
 report: cbmc property coverage
-	mkdir report
+	mkdir -p report
 	$(VIEWER) \
-	--goto build/$(ENTRY).goto \
+	--goto build/$(CC_OUTPUT) \
 	--reportdir report \
 	--result build/cbmc.xml \
 	--property build/property.xml \
-	--coverage build/coverage.xml
+	--coverage build/coverage.xml \
+	--srcdir $(ROOT)/os/
 
+# Clean build directory
 clean:
 	rm -r build
 
+# Clean build directory and report directory
 veryclean: clean
 	rm -r report

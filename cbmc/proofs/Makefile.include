@@ -24,6 +24,19 @@ INCLUDE = \
 # Arguments to pass to GOTO_CC
 CC_ARGS = \
 	--function harness \
+	-DWIN32 \
+	-DWINVER=0x400 \
+	-D_CONSOLE \
+	-D_CRT_SECURE_NO_WARNINGS \
+	-D_DEBUG \
+	-D_WIN32_WINNT=0x0500 \
+	-D__PRETTY_FUNCTION__=__FUNCTION__ \
+	-D__free_rtos__ \
+	-DCBMC \
+	-D'configASSERT(X)=__CPROVER_assert(X,"Assertion Error")' \
+	-D'configPRECONDITION(X)=__CPROVER_assume(X)' \
+	-D'_static=' \
+	-D'_volatile=' \
 	# empty
 
 # Arguments to pass to CBMC
@@ -56,6 +69,7 @@ bcbmc:
 # Preform extra processing on output, removing unnecessary functions and variables
 pcbmc: bcbmc
 	cp build/$(CC_OUTPUT) build/$(CC_OUTPUT).preclean
+	$(GOTO_INST) --add-library build/$(CC_OUTPUT) build/$(CC_OUTPUT)
 	$(GOTO_INST) --drop-unused-functions build/$(CC_OUTPUT).preclean build/$(CC_OUTPUT).clean1
 	$(GOTO_INST) --slice-global-inits build/$(CC_OUTPUT).clean1 build/$(CC_OUTPUT).clean2
 	$(GOTO_INST) --drop-unused-functions build/$(CC_OUTPUT).clean2 build/$(CC_OUTPUT).clean3

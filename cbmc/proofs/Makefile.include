@@ -64,7 +64,8 @@ MAC_CONF ?= MAC_CONF_WITH_NULLMAC
 # Creates build directories, builds all specific files
 bcbmc:
 	mkdir -p build
-	goto-cc -o build/$(CC_OUTPUT) $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_ROUTING=$(ROUTE_CONF) -DNETSTACK_CONF_NETWORK=$(NET_CONF) -DNETSTACK_CONF_MAC=$(MAC_CONF) $(HARNESS) $(LINK)
+	goto-cc -c -o build/$(CC_OUTPUT).part  $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_ROUTING=$(ROUTE_CONF) -DNETSTACK_CONF_NETWORK=$(NET_CONF) -DNETSTACK_CONF_MAC=$(MAC_CONF) $(HARNESS)
+	goto-cc -o build/$(CC_OUTPUT) $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_ROUTING=$(ROUTE_CONF) -DNETSTACK_CONF_NETWORK=$(NET_CONF) -DNETSTACK_CONF_MAC=$(MAC_CONF) build/$(CC_OUTPUT).part $(LINK)
 
 # Preform extra processing on output, removing unnecessary functions and variables
 pcbmc: bcbmc

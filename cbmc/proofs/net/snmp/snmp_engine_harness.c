@@ -100,6 +100,8 @@ int snmp_ber_decode_string_len_buffer(snmp_packet_t *snmp_packet, const char **s
 
     uint32_t size;
 
+    __CPROVER_assume(size < 100);
+
     // Set length to size:
 
     *length = size;

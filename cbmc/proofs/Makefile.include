@@ -1,29 +1,10 @@
-# Specifies the default target, report
-default: report
-
-#
-# Programs to utilize
-#
-
-GOTO_CC = goto-cc
-GOTO_INST = goto-instrument
-CBMC = cbmc
-VIEWER = cbmc-viewer
-
-#
-# Build arguments
-#
-
-# Include directories to consider
-INCLUDE = \
+C_INC = \
 	-I$(ROOT)/os \
 	-I$(ROOT)/arch/cpu/native \
 	-I$(ROOT)/arch/platform/native \
 	# empty
 
-# Arguments to pass to GOTO_CC
-CC_ARGS = \
-	--function harness \
+C_DEF = \
 	-DWIN32 \
 	-DWINVER=0x400 \
 	-D_CONSOLE \
@@ -39,70 +20,169 @@ CC_ARGS = \
 	-D'_volatile=' \
 	# empty
 
-# Arguments to pass to CBMC
-CBMC_ARGS = \
-	--function harness \
-	--nondet-static \
-	--flush \
+C_CBMCFLAGS = \
+	--object-bits 8 \
+	--32 \
 	--bounds-check \
 	--pointer-check \
-	--div-by-zero-check \
 	# empty
 
-# Name of output file
-CC_OUTPUT ?= build.goto
+O_INC = \
+	# empty
 
-# Network defines, we set the marco to the provided value
-ROUTE_CONF ?= ROUTING_CONF_NULLROUTING
-NET_CONF ?= NETSTACK_CONF_WITH_NULLNET
-MAC_CONF ?= MAC_CONF_WITH_NULLMAC
+default: report
 
-#
-# CBMC Rules
+# ____________________________________________________________________
+# CBMC binaries
 #
 
-# Creates build directories, builds all specific files
-bcbmc:
-	mkdir -p build
-	goto-cc -c -o build/$(CC_OUTPUT).part  $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_ROUTING=$(ROUTE_CONF) -DNETSTACK_CONF_NETWORK=$(NET_CONF) -DNETSTACK_CONF_MAC=$(MAC_CONF) $(HARNESS)
-	goto-cc -o build/$(CC_OUTPUT) $(INCLUDE) $(CC_ARGS) -DNETSTACK_CONF_ROUTING=$(ROUTE_CONF) -DNETSTACK_CONF_NETWORK=$(NET_CONF) -DNETSTACK_CONF_MAC=$(MAC_CONF) build/$(CC_OUTPUT).part $(LINK)
+GOTO_CC = goto-cc
+GOTO_INSTRUMENT = goto-instrument
+GOTO_ANALYZER = goto-analyzer
+VIEWER = cbmc-viewer
 
-# Preform extra processing on output, removing unnecessary functions and variables
-pcbmc: bcbmc
-	cp build/$(CC_OUTPUT) build/$(CC_OUTPUT).preclean
-	$(GOTO_INST) --add-library build/$(CC_OUTPUT) build/$(CC_OUTPUT)
-	$(GOTO_INST) --drop-unused-functions build/$(CC_OUTPUT).preclean build/$(CC_OUTPUT).clean1
-	$(GOTO_INST) --slice-global-inits build/$(CC_OUTPUT).clean1 build/$(CC_OUTPUT).clean2
-	$(GOTO_INST) --drop-unused-functions build/$(CC_OUTPUT).clean2 build/$(CC_OUTPUT).clean3
-	cp build/$(CC_OUTPUT).clean3 build/$(CC_OUTPUT)
+# ____________________________________________________________________
+# Variables
+#
+# Naming scheme:
+# ``````````````
+# FOO is the concatenation of the following:
+# FOO2: Set of command line
+# C_FOO: Value of $FOO common to all harnesses, set in this file
+# O_FOO: Value of $FOO specific to the OS we're running on, set in the
+#        makefile for the operating system
+# H_FOO: Value of $FOO specific to a particular harness, set in the
+#        makefile for that harness
 
-# Preform CBMC validation check (ignore return code)
-cbmc: pcbmc
-	-cbmc $(CBMC_ARGS) --unwinding-assertions --trace --xml-ui build/$(CC_OUTPUT) > build/cbmc.xml
+ENTRY = $(H_ENTRY)
 
-# Compute properties of goto binary
-property: bcbmc
-	cbmc $(CBMC_ARGS) --unwinding-assertions --show-properties --xml-ui build/$(CC_OUTPUT) > build/property.xml
+INC = \
+  $(INC2) \
+  $(C_INC) $(O_INC) $(H_INC) \
+  # empty
 
-# Preform code coverage of CBMC binary
-coverage: bcbmc
-	cbmc $(CBMC_ARGS) --cover location --xml-ui build/$(CC_OUTPUT) > build/coverage.xml
+CFLAGS = \
+  $(CFLAGS2) \
+  $(C_DEF) $(O_DEF) $(H_DEF) $(DEF) \
+  $(C_OPT) $(O_OPT) $(H_OPT) $(OPT) \
+  -m32 \
+  # empty
 
-# Generate HTML report using cbcm-viewer tool
-report: cbmc property coverage
-	mkdir -p report
+CBMCFLAGS = \
+  --flush \
+  $(CBMCFLAGS2) \
+  $(C_CBMCFLAGS) $(O_CBMCFLAGS) $(H_CBMCFLAGS) \
+  # empty
+
+INSTFLAGS = \
+  $(INSTFLAGS2) \
+  $(C_INSTFLAGS) $(O_INSTFLAGS) $(H_INSTFLAGS) \
+  # empty
+
+# ____________________________________________________________________
+# Rules
+#
+# Rules for building the CBMC harness
+
+C_SOURCES = $(patsubst %.goto,%.c,$(LINK))
+
+# Build each goto-binary out-of-source (i.e. in a 'gotos' directory
+# underneath each proof directory, to make it safe to build all proofs
+# in parallel
+OOS_OBJS = $(patsubst %.c,build/gotos/%.goto,$(C_SOURCES))
+
+CWD=$(abspath .)
+
+# Build all linked sources
+build/gotos/%.goto: %.c
+	$(GOTO_CC) -c -o build/gotos/$(shell basename $@) $(INC) $(CFLAGS) $^
+
+# Build the harness
+$(ENTRY)_harness.goto: $(ENTRY)_harness.c $(H_GENERATE_HEADER)
+	mkdir -p build/gotos
+	mkdir -p build/reports
+	$(GOTO_CC) -c -o build/$@ $(INC) $(CFLAGS) $(ENTRY)_harness.c
+
+# Link harness and linked sources
+$(ENTRY)1.goto: $(ENTRY)_harness.goto $(OOS_OBJS)
+	$(GOTO_CC) -o build/$@ --function harness build/$(ENTRY)_harness.goto $(addprefix build/gotos/,$(notdir $(OOS_OBJS)))
+
+# Add CBMC stub library
+$(ENTRY)2.goto: $(ENTRY)1.goto
+	 $(GOTO_INSTRUMENT) --add-library build/$^ build/$@ \
+		> build/reports/$(ENTRY)2.txt 2>&1
+
+# Drop unused functions
+$(ENTRY)3.goto: $(ENTRY)2.goto
+	$(GOTO_INSTRUMENT) --drop-unused-functions build/$^ build/$@ \
+		> build/reports/$(ENTRY)3.txt 2>&1
+
+# Drop unused global inits
+$(ENTRY)4.goto: $(ENTRY)3.goto
+	$(GOTO_INSTRUMENT) $(INSTFLAGS) --slice-global-inits build/$^ build/$@ \
+		> build/reports/$(ENTRY)4.txt 2>&1
+# ____________________________________________________________________
+# After running goto-instrument to remove function bodies the unused
+# functions need to be dropped again.
+
+$(ENTRY)5.goto: $(ENTRY)4.goto
+	$(GOTO_INSTRUMENT) --drop-unused-functions build/$^ build/$@ \
+		> build/reports/$(ENTRY)5.txt 2>&1
+
+# Copy final cleaned goto to ENTRY.goto
+$(ENTRY).goto: $(ENTRY)5.goto
+	cp build/$^ build/$@
+
+# ____________________________________________________________________
+# Rules
+#
+# Rules for running CBMC
+
+# Ignore the return code for CBMC, so that we can still generate the
+# report if the proof failed. If the proof failed, we separately fail
+# the entire job using the check-cbmc-result rule.
+cbmc.xml: $(ENTRY).goto
+	-cbmc $(CBMCFLAGS) $(SOLVER) --unwinding-assertions --trace --xml-ui build/$^ > build/reports/$@ 2>&1
+
+property.xml: $(ENTRY).goto
+	cbmc $(CBMCFLAGS) --unwinding-assertions --show-properties --xml-ui build/$^ > build/reports/$@ 2>&1
+
+coverage.xml: $(ENTRY).goto
+	cbmc $(CBMCFLAGS) --cover location --xml-ui build/$^ > build/reports/$@ 2>&1
+
+cbmc: cbmc.xml
+
+property: property.xml
+
+coverage: coverage.xml
+
+report: cbmc.xml property.xml coverage.xml
 	$(VIEWER) \
-	--goto build/$(CC_OUTPUT) \
+	--goto build/$(ENTRY).goto \
+	--srcdir $(ROOT) \
 	--reportdir report \
-	--result build/cbmc.xml \
-	--property build/property.xml \
-	--coverage build/coverage.xml \
-	--srcdir $(ROOT)/os/
+	--result build/reports/cbmc.xml \
+	--property build/reports/property.xml \
+	--coverage build/reports/coverage.xml
 
-# Clean build directory
+# This rule depends only on cbmc.xml and has no dependents, so it will
+# not block the report from being generated if it fails. This rule is
+# intended to fail if and only if the CBMC safety check that emits
+# cbmc.xml yielded a proof failure.
+check-cbmc-result: cbmc.xml
+	grep '<cprover-status>SUCCESS</cprover-status>' $^
+
+# ____________________________________________________________________
+# Rules
+#
+# Rules for cleaning up
+
 clean:
-	rm -r build
+	$(RM) -r build/
 
-# Clean build directory and report directory
 veryclean: clean
-	rm -r report
+	$(RM) -r report
+
+ifneq ($(strip $(EXTERNAL_SAT_SOLVER)),)
+   SOLVER = --external-sat-solver $(EXTERNAL_SAT_SOLVER)
+endif

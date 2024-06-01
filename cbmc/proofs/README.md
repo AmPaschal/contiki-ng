@@ -29,9 +29,6 @@ This system does not alter the contiki-ng build system or files in any way!
 
 We provide some targets:
 
-- `bcmbc` - Builds the harness and project using CBMC compilers, producing a goto binary
-- `pcbmc` - Processes the goto binary, removing unnecessary functions and variables
-- `rcbmc` - Invokes CBMC with the configured arguments on the output binaries (depends on `bcbmc`)
 - `cbmc` - Invokes CBMC on the final goto binary and preforms validation, producing a XML report
 - `property` - Determines some properties of the goto binary, producing a XML report
 - `coverage` - Determines code coverage of the goto binary, producing a XML report
@@ -40,10 +37,17 @@ We provide some targets:
 - `veryclean` - Removes the build directory and the report directory
 
 The target you probably want in `report`, and this should be the default target.
+All targets above will compile and link the necessary files.
+The final report will be placed in `report/`.
+The HTML version will be in `report/html/` and the JSON version will be in `report/json/`.
+You probably want to open the index file in `report/html/index.html`.
 
 To invoke this build system, navigate to the proof directory you wish to build,
 and run `make`. In most cases, the default target is `report`, so you can provide no arguments if this is what you want.
 The resulting binaries and object files will be placed under the `build` directory.
+Any linked in sources will be placed under `build/gotos/`, all generated reports (XML and program output)
+will be placed under `build/reports/`.
+Finally, the linked, cleaned, and resulting binaries will be placed int he root of `build/`.
 To clean up build files (recommended to do so after each change),
 simply invoke the `clean` or `veryclean` targets.
 

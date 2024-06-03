@@ -46,7 +46,7 @@
 #define LOG_LEVEL LOG_LEVEL_SNMP
 
 /*---------------------------------------------------------------------------*/
-static inline int
+inline int
 snmp_ber_encode_unsigned_integer(snmp_packet_t *snmp_packet, uint8_t type, uint32_t number)
 {
   uint16_t original_out_len;
@@ -269,7 +269,7 @@ snmp_ber_encode_null(snmp_packet_t *snmp_packet, uint8_t type)
   return snmp_ber_encode_type(snmp_packet, type);
 }
 /*---------------------------------------------------------------------------*/
-static inline int
+inline int
 snmp_ber_decode_unsigned_integer(snmp_packet_t *snmp_packet, uint8_t expected_type, uint32_t *num)
 {
   uint8_t i, len, type;

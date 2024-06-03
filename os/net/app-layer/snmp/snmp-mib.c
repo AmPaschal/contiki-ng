@@ -56,7 +56,7 @@ LIST(snmp_mib);
  *
  * @return < 0 if oid1 < oid2, > 0 if oid1 > oid2 and 0 if they are equal
  */
-static inline int
+inline int
 snmp_mib_cmp_oid(snmp_oid_t *oid1, snmp_oid_t *oid2)
 {
   uint8_t i;

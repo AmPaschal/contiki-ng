@@ -118,7 +118,7 @@ snmp_engine_get_next(snmp_header_t *header, snmp_varbind_t *varbinds)
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-static inline int
+inline int
 snmp_engine_get_bulk(snmp_header_t *header, snmp_varbind_t *varbinds)
 {
   snmp_mib_resource_t *resource;
@@ -137,6 +137,8 @@ snmp_engine_get_bulk(snmp_header_t *header, snmp_varbind_t *varbinds)
     memcpy(&oids[original_varbinds_length], &varbinds[original_varbinds_length].oid, sizeof(snmp_oid_t));
     original_varbinds_length++;
   }
+
+  __CPROVER_assume(original_varbinds_length < SNMP_MAX_NR_VALUES);
 
   varbinds_length = 0;
   for(i = 0; i < original_varbinds_length; i++) {

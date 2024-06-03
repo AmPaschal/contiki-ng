@@ -2,10 +2,12 @@
 # Be aware of how many directories deep you go!
 ROOT = ../../../..
 
+PREFIX = $(ROOT)/os/net/app-layer/snmp
+
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/app-layer/snmp/snmp-engine.c $(ROOT)/os/net/app-layer/snmp/snmp-message.c
+LINK = $(PREFIX)/snmp-engine.c $(PREFIX)/snmp-message.c $(PREFIX)/snmp-ber.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = snmp_engine

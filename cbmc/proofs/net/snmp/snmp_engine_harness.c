@@ -5,6 +5,8 @@
 #include "net/ipv6/uipopt.h"
 #include "net/ipv6/uip.h"
 
+#include <stdlib.h>
+
 /**
  * Decoder method stubs
  * 
@@ -29,14 +31,6 @@ inline int snmp_ber_decode_unsigned_integer(snmp_packet_t *snmp_packet, uint8_t 
         return 0;
     }
 
-    if(type != expected_type) {
-        /*
-        * Sanity check
-        * Invalid type in buffer
-        */
-        return 0;
-    }
-
     if(!snmp_ber_decode_length(snmp_packet, &len)) {
         return 0;
     }
@@ -44,14 +38,6 @@ inline int snmp_ber_decode_unsigned_integer(snmp_packet_t *snmp_packet, uint8_t 
     // The length MUST not be greater than 4:
 
     __CPROVER_assume(len <= 4);
-
-    if(len > 4) {
-        /*
-        * Sanity check
-        * It will not fit in the uint32_t
-        */
-        return 0;
-    }
 
     if(snmp_packet->used == 0) {
         return 0;
@@ -93,13 +79,7 @@ int snmp_ber_decode_string_len_buffer(snmp_packet_t *snmp_packet, const char **s
         return 0;
     }
 
-    if(type != BER_DATA_TYPE_OCTET_STRING) {
-        /*
-        * Sanity check
-        * Invalid type in buffer
-        */
-        return 0;
-    }
+    __CPROVER_assume(type == BER_DATA_TYPE_OCTET_STRING);
 
     // Choose an unconstrained size:
 
@@ -141,7 +121,7 @@ int snmp_ber_encode_string_len(snmp_packet_t *snmp_packet, const char *str, uint
 
   // Create some dummy data:
 
-  //uint8_t ddata = (uint8_t*)malloc(sizeof(uint8_t)*length);
+  //uint8_t* ddata = (uint8_t*)malloc(sizeof(uint8_t)*length);
 
   //__CPROVER_assume(ddata != NULL);
 
@@ -179,28 +159,17 @@ int snmp_ber_encode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid) {
 
   // Allocate some data:
 
-  //uint8_t odata = (uint8_t*)malloc(sizeof(uint8_t) * pos);
+  uint8_t* odata = (uint8_t*)malloc(sizeof(uint8_t) * pos);
 
-  //__CPROVER_assume(odata != NULL);
+  __CPROVER_assume(odata != NULL);
 
   // Copy the data in:
 
-  //memcpy(snmp_packet->out, odata, pos);
+  memcpy(snmp_packet->out, odata, pos);
 
   if(snmp_packet->used == snmp_packet->max) {
     return 0;
   }
-
-  val = *(snmp_packet->out + 1) + 40 * oid->data[pos];
-  snmp_packet->used--;
-  snmp_packet->out++;
-
-  if(snmp_packet->used == snmp_packet->max) {
-    return 0;
-  }
-
-  *snmp_packet->out-- = (uint8_t)(val & 0x7F);
-  snmp_packet->used++;
 
   // We don't know exactly how much to copy,
   // so just let the upper bound be the difference between used and max: 
@@ -208,21 +177,22 @@ int snmp_ber_encode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid) {
   int numc;
 
   __CPROVER_assume(numc < (snmp_packet->max - snmp_packet->used));
-  
+
+  // Create some more dummy data:
+  // TODO: Again, data copying is disabled for now
+
+  odata = (uint8_t*)malloc(sizeof(uint8_t)*numc);
+
+  __CPROVER_assume(odata != NULL);
+
+  // Copy data over:
+
+  memcpy(snmp_packet->out, odata, numc);
+
   // Update pointers again:
 
   snmp_packet->out -= numc;
   snmp_packet->used += numc;
-
-  // Create some more dummy data:
-
-  //odata = (uint8_t*)malloc(sizeof(uint8_t)*numc);
-
-  //__CPROVER_assume(odata != NULL);
-
-  // Copy data over:
-
-  //memcpy(snmp_packet->out, odata, numc);
 
   if(!snmp_ber_encode_length(snmp_packet, snmp_packet->used - original_out_len)) {
     return 0;
@@ -236,16 +206,15 @@ int snmp_ber_encode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid) {
 
 }
 
-int
-snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
+int snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
 {
 
   __CPROVER_assume(snmp_packet != NULL);
   __CPROVER_assume(oid != NULL);
 
   uint8_t *buf_end, type;
-  uint8_t len, j;
-  div_t first;
+  uint8_t len;
+  div_t first;  // Let first be unconstrained
 
   if(!snmp_ber_decode_type(snmp_packet, &type)) {
     return 0;
@@ -265,8 +234,10 @@ snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
     return 0;
   }
 
+  // Update pointers:
+
   snmp_packet->used--;
-  first = div(*snmp_packet->in++, 40);
+  snmp_packet->in++;
 
   oid->length = 0;
 
@@ -283,18 +254,18 @@ snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
 
   oid->length += write;
 
-  snmp_packet->in += write;
-  snmp_packet->used -= write;
-
   // Allocate some dummy data:
 
-  //uint32_t* ddata = (uint32*)malloc(sizeof(uint32_t) * write);
+  // uint32_t* ddata = (uint32_t*)malloc(sizeof(uint32_t) * write);
 
-  //__CPROVER_assume(ddata != NULL);
+  // __CPROVER_assume(ddata != NULL);
 
   // Copy data over:
 
-  //memcpy(oid->data, ddata, write);
+  // memcpy(oid->data, ddata, write);
+
+  snmp_packet->in += write;
+  snmp_packet->used -= write;
 
   return 1;
 }
@@ -356,39 +327,40 @@ int snmp_engine_get_bulk(snmp_header_t *header, snmp_varbind_t *varbinds) {}
 
 void harness() {
 
-    // Create a packet:
+  // Create a packet:
 
-    snmp_packet_t pack;
+  snmp_packet_t pack;
 
-    // Define max size of packet:
-    pack.max = UIP_BUFSIZE - UIP_IPUDPH_LEN;
+  // Define max size of packet:
+  pack.max = UIP_BUFSIZE - UIP_IPUDPH_LEN;
 
-    // In size, unconstrained
-    uint16_t insize;
+  // In size, unconstrained
+  uint16_t insize;
 
-    // Ensure size does not exceed max size:
+  // Ensure size does not exceed max size:
 
-    __CPROVER_assume(insize <= pack.max);
+  __CPROVER_assume(insize <= 10);
 
-    // Set used to input size:
+  // Set used to input size:
 
-    pack.used = insize;
+  pack.used = insize;
 
-    // TODO: Maybe have different sizes for in and out?
-    // Would that be realistic or fair?
+  // TODO: Maybe have different sizes for in and out?
+  // Would that be realistic or fair?
 
-    // Allocate memory for in data:
-    pack.in = (uint8_t*)malloc(sizeof(uint8_t) * insize);
+  // Allocate memory for in data:
+  pack.in = (uint8_t*)malloc(sizeof(uint8_t) * insize);
 
-    // Allocate memory for out data:
-    pack.out = (uint8_t*)malloc(sizeof(uint8_t) * insize);
+  // Allocate memory for out data:
+  // I believe the out pointer initially points to last value in input buffer?
+  pack.out = pack.in + insize;
 
-    // Allocated memory should not be null:
+  // Allocated memory should not be null:
 
-    __CPROVER_assume(pack.in != NULL);
-    __CPROVER_assume(pack.out != NULL);
+  __CPROVER_assume(pack.in != NULL);
+  __CPROVER_assume(pack.out != NULL);
 
-    // Pass to engine:
+  // Pass to engine:
 
-    snmp_engine(&pack);
+  snmp_engine(&pack);
 }

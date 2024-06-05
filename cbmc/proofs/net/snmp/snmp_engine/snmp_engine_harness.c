@@ -256,13 +256,13 @@ int snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
 
   // Allocate some dummy data:
 
-  // uint32_t* ddata = (uint32_t*)malloc(sizeof(uint32_t) * write);
+  uint32_t* ddata = (uint32_t*)malloc(sizeof(uint32_t) * write);
 
-  // __CPROVER_assume(ddata != NULL);
+  __CPROVER_assume(ddata != NULL);
 
   // Copy data over:
 
-  // memcpy(oid->data, ddata, write);
+  memcpy(oid->data, ddata, write);
 
   snmp_packet->in += write;
   snmp_packet->used -= write;

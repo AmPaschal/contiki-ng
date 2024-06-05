@@ -183,6 +183,11 @@ clean:
 veryclean: clean
 	$(RM) -r report
 
+# Clean alias
+c: clean
+
+vc: veryclean
+
 ifneq ($(strip $(EXTERNAL_SAT_SOLVER)),)
    SOLVER = --external-sat-solver $(EXTERNAL_SAT_SOLVER)
 endif

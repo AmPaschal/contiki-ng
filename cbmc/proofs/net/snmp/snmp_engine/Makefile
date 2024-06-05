@@ -1,6 +1,6 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = ../../../..
+ROOT = ../../../../..
 
 PREFIX = $(ROOT)/os/net/app-layer/snmp
 
@@ -13,7 +13,7 @@ LINK = $(PREFIX)/snmp-engine.c $(PREFIX)/snmp-message.c $(PREFIX)/snmp-ber.c
 H_ENTRY = snmp_engine
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static
+H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Extra header defintiions to be passed during compilation
 H_DEF = -DFREERTOS_TCP_ENABLE_VERIFICATION
@@ -22,4 +22,4 @@ H_DEF = -DFREERTOS_TCP_ENABLE_VERIFICATION
 H_INC = 
 
 # Include our special build file
-include ../../Makefile.include
+include ../../../Makefile.include

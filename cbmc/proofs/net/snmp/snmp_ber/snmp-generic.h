@@ -15,7 +15,7 @@
 #include "net/ipv6/uip.h"
 
 /**
- * @brief Initialises a packet in a standard way
+ * @brief Initialises a packet in a standard way for decoding
  * 
  * We preform the following steps:
  * - Define packet max size
@@ -26,7 +26,7 @@
  * 
  * Simply pass your packet and this function will initialize it as described.
  */
-inline void init_packet(snmp_packet_t* pack) {
+inline void init_packet_in(snmp_packet_t* pack) {
 
     // Define the max size:
     pack->max = UIP_BUFSIZE - UIP_IPUDPH_LEN;
@@ -56,4 +56,61 @@ inline void init_packet(snmp_packet_t* pack) {
 
     pack->in += offset;
     pack->used -= offset;
+}
+
+/**
+ * @brief Initialises a packet in a standard way for encoding
+ * 
+ * We preform the following steps:
+ * - Define packet max size
+ * - Set packet size as the maximum size
+ * - Set used value to zero
+ * - Allocate output buffer (won't be null)
+ * - Offset points by unconstrained value (won't exceed max)
+ * 
+ * Simply pass your packet and this function will initialize it as described.
+ * SNMP encodes in data backwards, so we have to do things in reverse.
+ * Also, I believe the SNMP packets assume the max size of the out data to be the max value.
+ * As data is written, the used value is is incremented, so the only way the writing functions
+ * are able to tell that all data is written is by comparing it with the max value.
+ * So, if we set the buffer size to be less than the max,
+ * we will see problems SNMP has no way of knowing it is out of bounds.
+ */
+inline void init_packet_out(snmp_packet_t* pack) {
+
+    // Define the max size:
+    pack->max = UIP_BUFSIZE - UIP_IPUDPH_LEN;
+
+    // Determine the size to work with, should not exceed max:
+    uint16_t size = pack->max;
+
+    __CPROVER_assume(size <= pack->max);
+
+    // Set used amount:
+
+    pack->used = 0;
+
+    // Allocate input to in buffer:
+
+    pack->out = (uint8_t*)malloc(sizeof(uint8_t) * size);
+
+    // Allocated data should not be null:
+
+    __CPROVER_assume(pack->out != NULL);
+
+    // Move pointer to end (don't do so if zero):
+
+    if (size != 0) {
+
+        pack->out += (size-1);
+    }
+
+    // Move pointers around by some amount (less than size):
+
+    uint16_t offset;
+
+    __CPROVER_assume(offset <= size);
+
+    pack->out -= offset;
+    pack->used += offset;
 }

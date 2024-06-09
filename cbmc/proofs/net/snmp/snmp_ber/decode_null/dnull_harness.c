@@ -1,9 +1,9 @@
 /**
- * @file doid_harness.c
+ * @file dnull_harness.c
  * @author Owen Cochell (owencochell@gmail.com)
- * @brief Tests for the OID decoder
+ * @brief Tests for the null decoder
  * @version 0.1
- * @date 2024-06-05
+ * @date 2024-06-07
  * 
  * @copyright Copyright (c) 2024
  * 
@@ -25,11 +25,7 @@ void harness() {
 
     init_packet_in(&pack);
 
-    // Create OID struct
+    // Send through decoder function:
 
-    snmp_oid_t oid;
-
-    // Send to function:
-
-    snmp_ber_decode_oid(&pack, &oid);
+    snmp_ber_decode_null(&pack);
 }

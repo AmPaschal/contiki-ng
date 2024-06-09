@@ -23,7 +23,7 @@ void harness() {
 
     // Initialize:
 
-    init_packet(&pack);
+    init_packet_in(&pack);
 
     // Define string to pass:
 

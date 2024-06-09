@@ -1,9 +1,9 @@
 /**
- * @file snmp_ber_harness.c
+ * @file eui_harness.c
  * @author Owen Cochell (owencochell@gmail.com)
- * @brief Tests unsigned int decoder
+ * @brief Tests for unsigned integer encoding
  * @version 0.1
- * @date 2024-06-04
+ * @date 2024-06-07
  * 
  * @copyright Copyright (c) 2024
  * 
@@ -12,8 +12,6 @@
 #include "contiki.h"
 #include "net/app-layer/snmp/snmp.h"
 #include "net/app-layer/snmp/snmp-ber.h"
-#include "net/ipv6/uipopt.h"
-#include "net/ipv6/uip.h"
 
 #include "snmp-generic.h"
 
@@ -24,11 +22,14 @@ void harness() {
 
     // Initialize:
 
-    init_packet_in(&pack);
+    init_packet_out(&pack);
 
-    // Define an unconstrained type and output:
+    // Define unconstrained values:
 
-    uint8_t type, out;
+    uint8_t type;
+    uint32_t number;
 
-    snmp_ber_decode_unsigned_integer(&pack, type, &out);
+    // Encode the unsigned int:
+
+    snmp_ber_encode_unsigned_integer(&pack, type, number);
 }

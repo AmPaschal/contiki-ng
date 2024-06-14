@@ -11,7 +11,7 @@ LINK = $(ROOT)/os/net/app-layer/snmp/snmp-ber.c
 H_ENTRY = doid
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 16
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset snmp_ber_decode_oid.0:5 --unwindset snmp_ber_decode_oid.1:16
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

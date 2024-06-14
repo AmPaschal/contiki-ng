@@ -450,7 +450,7 @@ snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
     return 0;
   }
 
-  if(!snmp_ber_decode_length(snmp_packet, &len)) {
+  if(!snmp_ber_decode_length(snmp_packet, &len)) {  // Pulls in potentially malicious size 
     return 0;
   }
 
@@ -463,13 +463,13 @@ snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
   snmp_packet->used--;
   first = div(*snmp_packet->in++, 40);
 
-  oid->length = 0;
+  oid->length = 0;  // This init could also be removed
 
   oid->data[oid->length++] = (uint32_t)first.quot;
   oid->data[oid->length++] = (uint32_t)first.rem;
 
   while(snmp_packet->in != buf_end) {
-    if(oid->length >= SNMP_MSG_OID_MAX_LEN) {
+    if(oid->length >= SNMP_MSG_OID_MAX_LEN) {  // This line can be removed
       return 0;
     }
 

@@ -22,7 +22,6 @@
  * - Set packet size as unconstrained (won't exceed max)
  * - Set used value to match our determined size
  * - Allocate input buffer (won't be null)
- * - Offset points by unconstrained value (won't exceed max)
  * 
  * Simply pass your packet and this function will initialize it as described.
  */
@@ -47,15 +46,6 @@ inline void init_packet_in(snmp_packet_t* pack) {
     // Allocated data should not be null:
 
     __CPROVER_assume(pack->in != NULL);
-
-    // Move pointers around by some amount (less than size):
-
-    uint16_t offset;
-
-    __CPROVER_assume(offset <= size);
-
-    pack->in += offset;
-    pack->used -= offset;
 }
 
 /**
@@ -66,7 +56,6 @@ inline void init_packet_in(snmp_packet_t* pack) {
  * - Set packet size as the maximum size
  * - Set used value to zero
  * - Allocate output buffer (won't be null)
- * - Offset points by unconstrained value (won't exceed max)
  * 
  * Simply pass your packet and this function will initialize it as described.
  * SNMP encodes in data backwards, so we have to do things in reverse.
@@ -104,12 +93,47 @@ inline void init_packet_out(snmp_packet_t* pack) {
 
         pack->out += (size-1);
     }
+}
+
+/**
+ * @brief Offsets in packet pointers
+ * 
+ * We offset the in packet data by some amount,
+ * and we ensure this amount will not exceed the packet length.
+ * This function is primarily useful for snmp-ber functions,
+ * where they are expected to decode data at arbitrary positions.
+ * 
+ * @param pack Packet to offset
+ */
+void offset_packet_in(snmp_packet_t* pack) {
 
     // Move pointers around by some amount (less than size):
 
     uint16_t offset;
 
-    __CPROVER_assume(offset <= size);
+    __CPROVER_assume(offset <= pack->used);
+
+    pack->in += offset;
+    pack->used -= offset;
+}
+
+/**
+ * @brief Offsets out packet pointers
+ * 
+ * We offset the out packet data by some amount.
+ * and we ensure this amount will not exceed the packet length.
+ * This function is primarily useful for snmp-ber functions,
+ * where they are expected to decode data at arbitrary positions.
+ * 
+ * @param pack Packet to offset
+ */
+void offset_packet_out(snmp_packet_t* pack) {
+
+    // Move pointers around by some amount (less than size):
+
+    uint16_t offset;
+
+    __CPROVER_assume(offset <= pack->used);
 
     pack->out -= offset;
     pack->used += offset;

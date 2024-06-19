@@ -40,11 +40,6 @@ void harness() {
 
     snmp_oid_t oid;
 
-    // Set length to be zero
-    // TODO: Remove this when re-introducing vulnerability!
-
-    oid.length = 0;
-
     // Send to function:
 
     snmp_ber_decode_oid(&pack, &oid);

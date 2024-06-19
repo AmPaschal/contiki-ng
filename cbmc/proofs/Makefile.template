@@ -1,6 +1,6 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = ../../../..
+ROOT = ../../../../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
@@ -20,4 +20,4 @@ H_DEF =
 H_INC = 
 
 # Include our special build file
-include ../../Makefile.include
+include ../../../../Makefile.include

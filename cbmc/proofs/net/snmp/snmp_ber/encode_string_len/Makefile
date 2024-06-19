@@ -17,7 +17,7 @@ H_CBMCFLAGS = --nondet-static --unwind 100
 H_DEF = 
 
 # Extra CBMC includes to be passed during compilation
-H_INC = -I..
+H_INC = -I../..
 
 # Include our special build file
 include ../../../../Makefile.include

@@ -5,13 +5,13 @@ ROOT = ../../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/app-layer/snmp/snmp-ber.c
+LINK = $(ROOT)/os/net/app-layer/snmp/snmp-message.c ../../ber-stubs.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = dui
+H_ENTRY = mde
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 4
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset snmp_message_decode.27:2
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

@@ -2,6 +2,7 @@ C_INC = \
 	-I$(ROOT)/os \
 	-I$(ROOT)/arch/cpu/native \
 	-I$(ROOT)/arch/platform/native \
+	-I$(ROOT)/cbmc/include \
 	# empty
 
 C_DEF = \
@@ -18,10 +19,13 @@ C_DEF = \
 	-D'configPRECONDITION(X)=__CPROVER_assume(X)' \
 	-D'_static=' \
 	-D'_volatile=' \
+	-D'MAC_CONF_WITH_NULLMAC=1' \
+	-D'NETSTACK_CONF_WITH_IPV6=1' \
+	-D'ROUTING_CONF_RPL_LITE=1' \
 	# empty
 
 C_CBMCFLAGS = \
-	--object-bits 8 \
+	--object-bits 9 \
 	--32 \
 	--bounds-check \
 	--pointer-check \

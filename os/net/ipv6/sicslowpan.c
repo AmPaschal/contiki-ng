@@ -1071,7 +1071,7 @@ compress_hdr_iphc(void)
  * fragment.
  * \return A boolean value indicating whether the uncompression succeeded.
  */
-static bool
+bool
 uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
 {
   uint8_t tmp, iphc0, iphc1, nhc;

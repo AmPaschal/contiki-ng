@@ -81,6 +81,12 @@ int snmp_ber_decode_null(snmp_packet_t *snmp_packet) {
 
 int snmp_ber_decode_string_len_buffer(snmp_packet_t *snmp_packet, const char **str, uint32_t *length) {
 
+  // Determine if we are at the end:
+
+  if (snmp_packet->used == 0) {
+    return 0;
+  }
+
   // Point string at memory pointed to:
 
   *str = (const char *)snmp_packet->in;

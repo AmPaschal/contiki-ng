@@ -23,7 +23,12 @@ void harness() {
 
     // Initialize:
 
-    init_packet_in(&pack);
+    //init_packet_in(&pack);
+
+    pack.used = 200;
+    pack.in = malloc(pack.used);
+
+    __CPROVER_assume(pack.in != NULL);
 
     // Create header:
 
@@ -36,7 +41,7 @@ void harness() {
 
     // Create varbind array:
 
-    snmp_varbind_t varbinds[SNMP_MAX_NR_VALUES];
+    snmp_varbind_t varbinds[2];
 
     // Pass values to function:
 

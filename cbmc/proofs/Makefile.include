@@ -1,3 +1,5 @@
+OBJ_BITS ?= 8
+
 C_INC = \
 	-I$(ROOT)/os \
 	-I$(ROOT)/arch/cpu/native \
@@ -15,17 +17,19 @@ C_DEF = \
 	-D__PRETTY_FUNCTION__=__FUNCTION__ \
 	-D__free_rtos__ \
 	-DCBMC \
-	-D'configASSERT(X)=__CPROVER_assert(X,"Assertion Error")' \
-	-D'configPRECONDITION(X)=__CPROVER_assume(X)' \
 	-D'_static=' \
 	-D'_volatile=' \
 	-D'MAC_CONF_WITH_NULLMAC=1' \
 	-D'NETSTACK_CONF_WITH_IPV6=1' \
 	-D'ROUTING_CONF_RPL_LITE=1' \
+	-D'MAC_CONF_WITH_CSMA=1' \
 	# empty
+	#-D'configASSERT(X)=__CPROVER_assert(X,"Assertion Error")' \
+	#-D'configPRECONDITION(X)=__CPROVER_assume(X)' \
+
 
 C_CBMCFLAGS = \
-	--object-bits 9 \
+	--object-bits $(OBJ_BITS) \
 	--32 \
 	--bounds-check \
 	--pointer-check \
@@ -168,6 +172,12 @@ report: cbmc.xml property.xml coverage.xml
 	--result build/reports/cbmc.xml \
 	--property build/reports/property.xml \
 	--coverage build/reports/coverage.xml
+
+# Preform pre-process on harness:
+process: $(ENTRY)_harness.c $(H_GENERATE_HEADER)
+	mkdir -p build/gotos
+	mkdir -p build/reports
+	cbmc --preprocess $(INC) $(C_DEF) $(C_INC) $(ENTRY)_harness.c > build/process.txt
 
 # This rule depends only on cbmc.xml and has no dependents, so it will
 # not block the report from being generated if it fails. This rule is

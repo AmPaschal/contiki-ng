@@ -12,6 +12,10 @@
 #include "contiki.h"
 #include "net/ipv6/sicslowpan.h"
 
+// Reset the state:
+
+packetbuf_hdr_len = 0;
+
 void harness() {
 
     // Define out buffer size:
@@ -21,13 +25,17 @@ void harness() {
     // Create out buffer:
     // (Buffer won't be NULL)
 
-    uint8_t outb = (uint8_t*)malloc(sizeof(uint8_t) * outb_size);
+    uint8_t* outb = (uint8_t*)malloc(sizeof(uint8_t) * outb_size);
 
     __CPROVER_assume(outb != NULL);
 
     // Define IP length:
 
     uint16_t ip_legnth;
+
+    // Init 6LowPAN
+
+    sicslowpan_init();
 
     uncompress_hdr_iphc(outb, outb_size, ip_legnth);
 }

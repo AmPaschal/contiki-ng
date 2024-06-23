@@ -5,7 +5,7 @@ ROOT = ../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip-ds6.c
+LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip-ds6.c $(ROOT)/os/net/linkaddr.c $(ROOT)/os/net/ipv6/uipbuf.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = uhi

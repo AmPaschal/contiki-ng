@@ -23,12 +23,7 @@ void harness() {
 
     // Initialize:
 
-    //init_packet_in(&pack);
-
-    pack.used = 200;
-    pack.in = malloc(pack.used);
-
-    __CPROVER_assume(pack.in != NULL);
+    init_packet_in(&pack);
 
     // Create header:
 

@@ -156,14 +156,14 @@
  * We initialize it to the beginning of the packetbuf buffer, then
  * access different fields by updating the offset packetbuf_hdr_len.
  */
-static uint8_t *packetbuf_ptr;
+uint8_t *packetbuf_ptr;
 
 /**
  * packetbuf_hdr_len is the total length of (the processed) 6lowpan headers
  * (fragment headers, IPV6 or HC1, HC2, and HC1 and HC2 non compressed
  * fields).
  */
-static uint8_t packetbuf_hdr_len;
+uint8_t packetbuf_hdr_len;
 
 /**
  * The length of the payload in the Packetbuf buffer.
@@ -171,7 +171,7 @@ static uint8_t packetbuf_hdr_len;
  * headers (can be the IP payload if the IP header only is compressed
  * or the UDP payload if the UDP header is also compressed)
  */
-static int packetbuf_payload_len;
+int packetbuf_payload_len;
 
 /**
  * uncomp_hdr_len is the length of the headers before compression (if HC2
@@ -1090,8 +1090,8 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
   }
 
   /* at least two byte will be used for the encoding */
-  cmpr_len = packetbuf_datalen();
-  if(cmpr_len < packetbuf_hdr_len + 2) {
+  cmpr_len = packetbuf_datalen();  // Maxmum buffer size
+  if(cmpr_len < packetbuf_hdr_len + 2) {  // NEEDS to be <=
     return false;
   }
   iphc_ptr = packetbuf_ptr + packetbuf_hdr_len + 2;
@@ -1101,6 +1101,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
 
   /* another if the CID flag is set */
   if(iphc1 & SICSLOWPAN_IPHC_CID) {
+
     LOG_DBG("uncompression: CID flag set - increase header with one\n");
     iphc_ptr++;
   }

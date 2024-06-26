@@ -14,6 +14,18 @@
 
 #include "gnet/packetbuf-generic.h"
 
+int8_t
+add_fragment(uint16_t tag, uint16_t frag_size, uint8_t offset) {}
+
+bool
+uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len) {}
+
+int
+clear_fragments(uint8_t frag_info_index) {}
+
+bool
+copy_frags2uip(int context) {}
+
 void harness() {
 
     // Init the packetbuf:

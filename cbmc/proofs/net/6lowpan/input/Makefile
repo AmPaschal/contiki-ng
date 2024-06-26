@@ -5,10 +5,16 @@ ROOT = ../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/ipv6/sicslowpan.c
+LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/packetbuf.c
 
 # Need to increace object bits due to complexity
-OBJ_BITS = 0
+OBJ_BITS = 9
+
+# Number of fragement buffers
+NUM_BUFF = 2
+
+# Size of fragement buffer
+BUFF_SIZE = 10
 
 # Harness to utilize, omit the extension!
 H_ENTRY = input
@@ -17,7 +23,7 @@ H_ENTRY = input
 H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Extra header defintiions to be passed during compilation
-H_DEF = 
+H_DEF = -D'SICSLOWPAN_CONF_FRAGMENT_BUFFERS=$(NUM_BUFF)' -D'SICSLOWPAN_CONF_FRAGMENT_SIZE=$(BUFF_SIZE)'
 
 # Extra CBMC includes to be passed during compilation
 H_INC = 

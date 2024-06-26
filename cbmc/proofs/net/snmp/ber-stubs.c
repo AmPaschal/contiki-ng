@@ -83,12 +83,19 @@ inline int snmp_ber_decode_unsigned_integer(snmp_packet_t *snmp_packet, uint8_t 
   // TODO: Need to determine when we are going over max value!
   // If in the section below we go over the bounds then this function may produce a violation
 
+  uint8_t off = 0;
+
+  if ((len-1) > snmp_packet->used) {
+
+    off = (len-1) - snmp_packet->used;
+  }
+
   // Only increment if len is not zero:
 
   if (len != 0) {
 
-    snmp_packet->in += (len - 1);
-    snmp_packet->used -= (len - 1);
+    snmp_packet->in += (len - 1 - off);
+    snmp_packet->used -= (len - 1 - off);
   }
 
   // Define unconstrained int:

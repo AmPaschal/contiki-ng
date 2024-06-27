@@ -5,17 +5,16 @@ ROOT = ../../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-ext-header.c $(ROOT)/os/net/ipv6/uipbuf.c
-#$(ROOT)/os/net/ipv6/uipbuf.c $(ROOT)/os/net/routing/rpl-classic/rpl.c
-
+LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-icmp6.c $(ROOT)/os/net/ipv6/uipbuf.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip6.c
+#$(ROOT)/os/net/ipv6/uip6.c $(ROOT)/os/net/ipv6/uip-ds6-route.c $(ROOT)/os/lib/list.c $(ROOT)/os/net/nbr-table.c $(ROOT)/os/net/routing/rpl-classic/rpl-dag.c $(ROOT)/os/lib/memb.c $(ROOT)/os/net/ipv6/uip-ds6.c $(ROOT)/os/net/ipv6/uip-ds6-nbr.c
 # Harness to utilize, omit the extension!
-H_ENTRY = srhu
+H_ENTRY = dis
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --unwind 1 --nondet-static --signed-overflow-check --unsigned-overflow-check --unwindset uipbuf_search_header.0:5
+H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Extra header defintiions to be passed during compilation
-H_DEF = -D'RPL_CONF_WITH_NON_STORING=1' -D'UIP_CONF_BUFFER_SIZE=50'
+H_DEF = -D'UIP_CONF_BUFFER_SIZE=500'
 
 # Extra CBMC includes to be passed during compilation
 H_INC = 

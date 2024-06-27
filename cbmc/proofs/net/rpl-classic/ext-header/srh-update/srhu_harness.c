@@ -25,11 +25,5 @@ void harness() {
 
     __CPROVER_assume(uip_len <= UIP_BUFSIZE);
 
-    // Allocate data:
-
-    uint8_t* data = (uint8_t*)malloc(sizeof(uint8_t) * uip_len);
-
-    memcpy(uip_aligned_buf.u8, data, uip_len);
-
     rpl_ext_header_srh_update();
 }

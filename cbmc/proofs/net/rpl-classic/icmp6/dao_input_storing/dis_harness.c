@@ -120,7 +120,7 @@ void harness() {
 
     // Total length of extension headers will not exceed buffer size:
 
-    __CPROVER_assume(uip_ext_len <= uip_l3_icmp_hdr_len);
+    __CPROVER_assume(uip_ext_len <= uip_len);
 
     // Prepare packetbuf:
 

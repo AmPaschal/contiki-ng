@@ -23,7 +23,7 @@ void harness() {
     // Ensure uip_len does not exceed UIP_BUFFSIZE:
     // TODO: Uncomment if testing found vulnerability!
 
-    __CPROVER_assume(uip_len <= UIP_BUFSIZE);
+    // __CPROVER_assume(uip_len <= UIP_BUFSIZE);
 
     rpl_ext_header_srh_update();
 }

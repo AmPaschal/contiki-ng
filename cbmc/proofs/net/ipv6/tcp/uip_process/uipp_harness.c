@@ -15,6 +15,7 @@
 extern struct uip_udp_conn *uip_udp_conn;
 extern uint16_t uip_len;
 uint16_t uip_ext_len;  // Define header extension length
+extern struct uip_conn *uip_conn;
 
 uint16_t chksum(uint16_t sum, const uint8_t *data, uint16_t len) {
 
@@ -24,6 +25,30 @@ uint16_t chksum(uint16_t sum, const uint8_t *data, uint16_t len) {
 
     return sum;
 }
+
+// uint8_t* uipbuf_get_next_header(uint8_t *buffer, uint16_t size, uint8_t *protocol, bool start) {
+
+//     // Define unconstrained protocol value:
+
+//     uint8_t proto;
+
+//     *protocol = proto;
+
+//     // Determine some offset:
+
+//     uint16_t offset;
+
+//     // Offset will not exceed max:
+
+//     if (offset >= size) {
+
+//         return NULL;
+//     }
+
+//     // Otherwise, preform offset:
+
+//     return buffer + size;
+// }
 
 void harness() {
 
@@ -37,7 +62,13 @@ void harness() {
 
     // Header length will not exceed uip_len:
 
+    uip_ext_len = 40;
+
     __CPROVER_assume(uip_ext_len <= uip_len);
+
+    // Allocate connection data:
+
+    uip_conn = (struct uip_conn*)malloc(sizeof(struct uip_conn));
 
     // Total length of extension headers will not exceed buffer size:
 
@@ -47,5 +78,7 @@ void harness() {
 
     uint8_t flag;
 
+    uip_init();
+    
     uip_process(flag);
 }

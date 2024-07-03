@@ -1,4 +1,9 @@
+# Number of bits to represent object
 OBJ_BITS ?= 8
+
+NET_DRIVER ?= NETSTACK_CONF_WITH_IPV6
+MAC_DRIVER ?= MAC_CONF_WITH_NULLMAC
+ROUTE_DRIVER ?= ROUTING_CONF_RPL_LITE
 
 C_INC = \
 	-I$(ROOT)/os \
@@ -19,10 +24,9 @@ C_DEF = \
 	-DCBMC \
 	-D'_static=' \
 	-D'_volatile=' \
-	-D'MAC_CONF_WITH_NULLMAC=1' \
-	-D'NETSTACK_CONF_WITH_IPV6=1' \
-	-D'ROUTING_CONF_RPL_LITE=1' \
-	-D'MAC_CONF_WITH_CSMA=1' \
+	-D'$(MAC_DRIVER)=1' \
+	-D'$(NET_DRIVER)=1' \
+	-D'$(ROUTE_DRIVER)=1' \
 	# empty
 	#-D'configASSERT(X)=__CPROVER_assert(X,"Assertion Error")' \
 	#-D'configPRECONDITION(X)=__CPROVER_assume(X)' \

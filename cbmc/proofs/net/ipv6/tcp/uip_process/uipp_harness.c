@@ -78,7 +78,11 @@ void harness() {
 
     uint8_t flag;
 
-    uip_init();
-    
+
+    uipbuf_init();
+    uip_ds6_init();
+    uip_icmp6_init();
+    uip_nd6_init();
+
     uip_process(flag);
 }

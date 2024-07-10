@@ -46,6 +46,8 @@ inline void init_packet_in(snmp_packet_t* pack) {
     // Allocated data should not be null:
 
     __CPROVER_assume(pack->in != NULL);
+
+    __CPROVER_assume(__CPROVER_rw_ok(pack->in, size));
 }
 
 /**

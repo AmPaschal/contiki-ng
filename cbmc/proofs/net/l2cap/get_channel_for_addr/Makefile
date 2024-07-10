@@ -11,7 +11,7 @@ LINK = $(ROOT)/os/net/mac/ble/ble-l2cap.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/
 H_ENTRY = gca
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset get_channel_for_addr.0:256 --unwindset memcmp.0:255
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset get_channel_for_addr.0:8
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

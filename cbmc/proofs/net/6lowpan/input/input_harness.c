@@ -13,18 +13,19 @@
 #include "net/ipv6/sicslowpan.h"
 
 #include "gnet/packetbuf-generic.h"
+#include "drivers/cbmc_sniffer.h"
 
-int8_t
-add_fragment(uint16_t tag, uint16_t frag_size, uint8_t offset) {}
+// int8_t
+// add_fragment(uint16_t tag, uint16_t frag_size, uint8_t offset) {}
 
 bool
 uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len) {}
 
-int
-clear_fragments(uint8_t frag_info_index) {}
+// int
+// clear_fragments(uint8_t frag_info_index) {}
 
-bool
-copy_frags2uip(int context) {}
+// bool
+// copy_frags2uip(int context) {}
 
 void harness() {
 
@@ -35,6 +36,10 @@ void harness() {
     // Init the system:
 
     sicslowpan_init();
+
+    // Define the sniffer:
+
+    netstack_sniffer_add(&cbmc_sniffer);
 
     // Call the input function:
 

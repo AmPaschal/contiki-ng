@@ -28,7 +28,8 @@ void harness() {
 
     // Define an unconstrained type and output:
 
-    uint8_t type, out;
+    uint8_t type;
+    uint32_t out;
 
     snmp_ber_decode_unsigned_integer(&pack, type, &out);
 }

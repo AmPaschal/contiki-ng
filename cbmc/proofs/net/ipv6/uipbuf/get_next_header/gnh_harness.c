@@ -23,7 +23,7 @@ void harness() {
 
     __CPROVER_assume(isize >= sizeof(struct uip_ip_hdr));
 
-    // Allocate buffer of previous size:
+    // Allocate buffer of unconstrained size:
 
     uint8_t *buff = (uint8_t *)malloc(sizeof(uint8_t) * isize);
 
@@ -32,7 +32,6 @@ void harness() {
     __CPROVER_assume(buff != NULL);
 
     // Define unconstrained protocol char
-    // (Maybe set to 0? Will be overwritten?)
 
     uint8_t proto;
 

@@ -26,7 +26,6 @@ void harness() {
     l2cap_channel_t channel;
 
     uint8_t *data = (uint8_t *)packetbuf_dataptr();
-    // uint16_t len = packetbuf_datalen();
 
     input_l2cap_frame_flow_channel(&channel, data, len);
 }

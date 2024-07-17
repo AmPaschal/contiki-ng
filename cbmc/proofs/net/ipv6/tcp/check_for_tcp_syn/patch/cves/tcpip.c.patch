@@ -1,0 +1,22 @@
+diff --git a/os/net/ipv6/tcpip.c b/os/net/ipv6/tcpip.c
+index 8e0572f75..f6ef09a3f 100644
+--- a/os/net/ipv6/tcpip.c
++++ b/os/net/ipv6/tcpip.c
+@@ -145,7 +145,7 @@ start_periodic_tcp_timer(void)
+ }
+ #endif /* UIP_TCP */
+ /*---------------------------------------------------------------------------*/
+-static void
++void
+ check_for_tcp_syn(void)
+ {
+ #if UIP_TCP
+@@ -155,7 +155,7 @@ check_for_tcp_syn(void)
+      this timer.  This function is called for every incoming IP packet
+      to check for such SYNs. */
+ #define TCP_SYN 0x02
+-  if(uip_len >= UIP_IPTCPH_LEN + uip_ext_len &&
++  if(1 &&
+      UIP_IP_BUF->proto == UIP_PROTO_TCP &&
+      (UIP_TCP_BUF->flags & TCP_SYN) == TCP_SYN) {
+     start_periodic_tcp_timer();

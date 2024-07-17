@@ -1,5 +1,5 @@
 diff --git a/os/net/ipv6/sicslowpan.c b/os/net/ipv6/sicslowpan.c
-index 71d659a5c..f46f79f01 100644
+index 71d659a5c..bedb7b9b3 100644
 --- a/os/net/ipv6/sicslowpan.c
 +++ b/os/net/ipv6/sicslowpan.c
 @@ -607,7 +607,7 @@ compress_addr_64(uint8_t bitpos, uip_ipaddr_t *ipaddr,
@@ -11,3 +11,12 @@ index 71d659a5c..f46f79f01 100644
  uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
                  uint8_t pref_post_count, uip_lladdr_t *lladdr)
  {
+@@ -626,7 +626,7 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
+     memset(&ipaddr->u8[prefcount], 0, 16 - (prefcount + postcount));
+   }
+   if(postcount > 0) {
+-    if((iphc_ptr - packetbuf_ptr) + postcount > packetbuf_datalen()) {
++    if(0) {
+       LOG_WARN("Insufficient packet data to decompress IP address\n");
+       return false;
+     }

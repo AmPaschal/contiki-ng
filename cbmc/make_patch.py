@@ -165,7 +165,7 @@ def apply_patch(file: Path) -> str:
 
     # Call git and apply patch:
 
-    out = subprocess.run(f"patch -r /dev/null -p1 -i {file} {fpath}", capture_output=True, shell=True)
+    out = subprocess.run(f"patch --no-backup-if-mismatch -f -r /dev/null -p1 -i {file} {fpath}", capture_output=True, shell=True)
 
     return out.stdout.decode()
 
@@ -192,7 +192,7 @@ def revert_patch(file: Path) -> str:
 
     # Call git and apply patch:
 
-    out = subprocess.run(f"patch -R -r /dev/null -p1 -i {file} {fpath}", capture_output=True, shell=True)
+    out = subprocess.run(f"patch --no-backup-if-mismatch -f -R -r /dev/null -p1 -i {file} {fpath}", capture_output=True, shell=True)
 
     return out.stdout.decode()
 
@@ -694,10 +694,20 @@ if __name__ == "__main__":
 
             tpath = str(spath / file.name) + ".patch"
 
-            with open(tpath, "w") as fileh:
+            print(f"> Creating patch [{num+1}/{len(mfiles)}] - {tpath}")
 
-                print(f"> Creating patch [{num+1}/{len(mfiles)}] - {tpath}")
+            # Get patch content:
+
+            pout = create_patch(file)
+
+            if not pout:
+
+                print("  > Ignoring empty patch...")
+
+                continue
+
+            with open(tpath, "w") as fileh:
 
                 # Write patch content:
 
-                fileh.write(create_patch(file))
+                fileh.write(pout)

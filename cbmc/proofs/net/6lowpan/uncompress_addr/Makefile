@@ -1,8 +1,7 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
 # TODO: Change to local root!
-#ROOT = ../../../../..
-ROOT = /home/owen/Documents/projects/surf/forks/contiki-ng
+ROOT = ../../../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)

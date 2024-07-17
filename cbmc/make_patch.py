@@ -50,6 +50,9 @@ APPLY = 0
 REVERT = 1
 RESET = 2
 
+# Line separator to utilize
+SEP = "+=====================================================+"
+
 ##
 # Regex
 ##
@@ -67,7 +70,7 @@ def parent_dir() -> Path:
         Path: Path to parent directory
     """
 
-    return subprocess.run("git rev-parse --show-toplevel", capture_output=True).stdout
+    return Path(subprocess.run("git rev-parse --show-toplevel", capture_output=True, shell=True).stdout.rstrip().decode())
 
 
 def required_dir(path: Path) -> Path:
@@ -82,7 +85,7 @@ def required_dir(path: Path) -> Path:
         Path: Path to required patch dir
     """
 
-    return path / PARENT_DIR / REQ_DIR
+    return path / Path(PARENT_DIR) / Path(REQ_DIR)
 
 
 def cve_dir(path: Path) -> Path:
@@ -97,7 +100,7 @@ def cve_dir(path: Path) -> Path:
         Path: Path to CVE patch dir
     """
 
-    return path / PARENT_DIR / CVE_DIR
+    return path / Path(PARENT_DIR) / Path(CVE_DIR)
 
 
 def vuln_dir(path: Path) -> Path:
@@ -112,7 +115,7 @@ def vuln_dir(path: Path) -> Path:
         Path: Path to vulnerability patch dir
     """
 
-    return path / PARENT_DIR / VUL_DIR
+    return path / Path(PARENT_DIR) / Path(VUL_DIR)
 
 
 def create_patch(file: Path) -> str:
@@ -133,11 +136,11 @@ def create_patch(file: Path) -> str:
     
     # Call git and capture output:
 
-    out = subprocess.run(f"git diff --patch {file}", capture_output=True)
+    out = subprocess.run(f"git diff --patch {file}", capture_output=True, shell=True)
 
     # Return process output:
 
-    return out.stdout
+    return out.stdout.decode()
 
 
 def apply_patch(file: Path) -> str:
@@ -156,11 +159,15 @@ def apply_patch(file: Path) -> str:
         str: Git output
     """
 
+    # Get path to original file:
+
+    fpath = extract_filename_patch(file)
+
     # Call git and apply patch:
 
-    out = subprocess.run(f"git apply {file}", capture_output=True)
+    out = subprocess.run(f"patch -r /dev/null -p1 -i {file} {fpath}", capture_output=True, shell=True)
 
-    return out.stdout
+    return out.stdout.decode()
 
 
 def revert_patch(file: Path) -> str:
@@ -179,11 +186,15 @@ def revert_patch(file: Path) -> str:
         str: Git output
     """
 
+    # Get path to original file:
+
+    fpath = parent_dir() / extract_filename_patch(file)
+
     # Call git and apply patch:
 
-    out = subprocess.run(f"git apply -R {file}", capture_output=True)
+    out = subprocess.run(f"patch -R -r /dev/null -p1 -i {file} {fpath}", capture_output=True, shell=True)
 
-    return out.stdout
+    return out.stdout.decode()
 
 
 def reset_file(file: Path) -> str:
@@ -206,9 +217,9 @@ def reset_file(file: Path) -> str:
 
     # Call git and reset file:
 
-    out = subprocess.run(f"git restore {file}", capture_output=True)
+    out = subprocess.run(f"git restore {file}", capture_output=True, shell=True)
 
-    return out.stdout
+    return out.stdout.decode()
 
 
 def recur_patch(path: Path, oper: int) -> list[Path]:
@@ -250,7 +261,7 @@ def recur_patch(path: Path, oper: int) -> list[Path]:
 
             # Revert required patch:
 
-            revert_patch()
+            revert_patch(patch)
 
 
 def extract_filenames_make(path: Path) -> list[Path]:
@@ -276,7 +287,7 @@ def extract_filenames_make(path: Path) -> list[Path]:
 
     # Get makefile file handle:
 
-    with open(path / MAKEN, "r") as file:
+    with open(path / Path(MAKEN), "r") as file:
 
         # Find relevant lines:
 
@@ -314,11 +325,11 @@ def extract_filenames_make(path: Path) -> list[Path]:
 
             # Determine total path:
 
-            tpath = Path(path.replace("$(ROOT)", root))
+            tpath = Path(path.replace("$(ROOT)/", ''))
 
             # Make absolute and add to list:
 
-            final_files.append(tpath.absolute())
+            final_files.append(parent_dir() / tpath)
 
     # Return found files:
 
@@ -343,7 +354,7 @@ def extract_filename_patch(path: Path) -> Path:
 
         # Read until we hit the first modifier:
 
-        for line in file.readlines:
+        for line in file.readlines():
 
             # Determine if we hit modifier '---':
 
@@ -351,7 +362,7 @@ def extract_filename_patch(path: Path) -> Path:
 
                 # Found target, construct path:
 
-                return (parent_dir() / Path(line.split("--- a")[1])).absolute()
+                return (parent_dir() / Path(line.split("--- a/")[1].rstrip())).absolute()
 
 
 def create_ptable(path: Path) -> Dict[Path, Path]:
@@ -375,7 +386,7 @@ def create_ptable(path: Path) -> Dict[Path, Path]:
 
     # Iterate over patch files:
 
-    for file in path.rglob(f"*.{EXTENSION}"):
+    for file in path.rglob(f"*.{EXTENSION[1:]}"):
 
         # Extract the file info:
 
@@ -404,7 +415,7 @@ def print_pinfo(oper: str, rpatch: Dict[Path, Path], cpatch: Dict[Path, Path], v
     print("+=====================================================+")
     print(f" --== [ Patch {oper} ] ==--")
 
-    print(f"{oper}ing [{len(rpatch)}] required patches: ")
+    print(f"{oper}ing [{len(rpatch)}] required patches...")
 
     for p in rpatch:
 
@@ -426,6 +437,23 @@ def print_pinfo(oper: str, rpatch: Dict[Path, Path], cpatch: Dict[Path, Path], v
 
             print(f"=-= {p} - {vpatch[p]}")
 
+
+def print_rinfo(files: list[Path]):
+    """
+    Prints info on the files being reset.
+
+    Args:
+        files (list[Path]): Files to reset
+    """
+
+    print(f" --== [ File Info ] ==--")
+    print(f"Considering [{len(files)}] files...")
+
+    for f in files:
+
+        print(f"=-= {f}")
+
+
 if __name__ == "__main__":
 
     # Ran as script
@@ -437,21 +465,17 @@ if __name__ == "__main__":
 
     parser.add_argument('path', help='Path to directory containing proof and makefile', default=Path(__file__), nargs='?')
 
-    # Define files to operate on (by default operates on linked files in makefile)
-
-    parser.add_argument()
-
     ##
     # Operation to preform - apply, revert, reset, create
     ##
 
-    oper = parser.add_mutually_exclusive_group("Operation Options", "Arguments for choosing the operation to preform", required=True)
+    oper = parser.add_mutually_exclusive_group(required=True)
 
     oper.add_argument("-a", "--apply", help="Applies any relevant patches", action='store_true')
     oper.add_argument("-rv", "--revert", help="Reverts any relevant patches", action='store_true')
     oper.add_argument("-rs", "--reset", help="Resets any relevant patches", action='store_true')
-    oper.add_argument("-c", "--create", help="Creates patches based upon target files", actions="store_true")
-    oper.add_argument("-i", "--info", help="Just shows info on available patches", actions="store_true")
+    oper.add_argument("-c", "--create", help="Creates patches based upon target files", action="store_true")
+    oper.add_argument("-i", "--info", help="Just shows info on available patches", action="store_true")
 
     ##
     # Files to utilize
@@ -460,33 +484,77 @@ if __name__ == "__main__":
 
     files = parser.add_argument_group("File Options", "Arguments for choosing files to operate on")
 
-    files.add_argument("-nm", "--no-extract", help="Disables makefile file extraction or proof file extraction", actions="store_true")
-    files.add_argument("-af", "--add-file", help="Adds a file to consider", nargs='*', action='append')
-    files.add_argument("-rf", "--remove-file", help="Removes a file from consideration", nargs='*', action='append')
+    files.add_argument("-nm", "--no-extract", help="Disables makefile file extraction or proof file extraction", action="store_true")
+    files.add_argument("-af", "--add-file", help="Adds a file to consider", action='append', default=[])
+    files.add_argument("-rf", "--remove-file", help="Removes a file from consideration", action='append', default=[])
 
     ##
     # Type of patch to work with - required, CVE, vulnerability
     # Required is implied and will always be applied UNLESS we are creating patches.
     ##
 
-    oper.add_argument("-cv", "--cve", help="Works with CVE related patches", action='store_true')
-    oper.add_argument("-vb", "--vuln", help="Works with vulnerability related packets", action='store_true')
+    parser.add_argument("-cv", "--cve", help="Works with CVE related patches", action='store_true')
+    parser.add_argument("-vb", "--vuln", help="Works with vulnerability related packets", action='store_true')
 
     args = parser.parse_args()
 
+    # Get parent path:
+
+    ppath = args.path
+
     # Construct patch tables:
 
-    rpatch = create_ptable(required_dir())
-    cpatch = create_ptable(cve_dir())
-    vpatch = create_ptable(vuln_dir())
+    rpatch = create_ptable(required_dir(ppath))
+    cpatch = create_ptable(cve_dir(ppath))
+    vpatch = create_ptable(vuln_dir(ppath))
 
     # Extract files from makefile, add good files:
 
-    mfiles: list[Path] = extract_filenames_make() + args.add_file
+    rmfiles: list[Path] = []
+    mfiles: list[Path] = args.add_file
+
+    if not args.no_extract:
+
+        mfiles += extract_filenames_make(ppath)
+
+    # Make all files absolute:
+
+    for num, file in enumerate(mfiles):
+
+        mfiles[num] = Path(file).resolve()
+
+        if not mfiles[num].exists():
+
+            print("! Error !")
+            print(f"File [{file}] does not exist!")
+
+            exit()
+
+    for file in args.remove_file:
+
+        rpath = Path(file).resolve()
+
+        if not rpath.exists():
+
+            print("! Error !")
+            print(f"File [{rpath}] does not exist!")
+
+            exit()
+
+        rmfiles.append(rpath)
 
     # Iterate over bad files:
 
-    for bfile in args.remove_file:
+    for bfile in rmfiles:
+
+        # Determine if file exists:
+
+        if not bfile.exists():
+
+            print(" ! Error !")
+            print(f"Makefile [{bfile}] does not exist!")
+
+            exit()
 
         # Remove file from patch tables:
 
@@ -498,9 +566,35 @@ if __name__ == "__main__":
 
         mfiles.remove(bfile)
 
+    print(SEP)
+
+    print_rinfo(mfiles)
+
+    # Determine list of patches to consider:
+
+    plist: list[Dict[Path, Path]] = [rpatch]
+
+    if args.cve:
+
+        # Add CVE related patches:
+
+        plist.append(cpatch)
+
+    if args.vuln:
+
+        # Add vulnerability related patches:
+
+        plist.append(vpatch)
+
     ##
     # Determine which operation we are preforming
     ##
+
+    if args.info:
+
+        # We just want to show patch info
+
+        print_pinfo("Info", rpatch, cpatch, vpatch)
 
     if args.apply:
 
@@ -508,10 +602,102 @@ if __name__ == "__main__":
 
         print_pinfo("Apply", rpatch, cpatch, vpatch)
 
-        # Iterate over required patches:
+        # Iterate over all patches:
 
-        for patch in rpatch:
+        for pval in plist:
 
-            # Apply patch:
+            for num, patch in enumerate(pval):
 
-            apply_patch(rpatch)
+                # Apply patch:
+
+                print(f"++ [{num+1}/{len(pval)}]: {patch} - {pval[patch]}")
+
+                print(apply_patch(pval[patch]))
+
+    if args.revert:
+
+        # We want to revert files, print out some info:
+
+        print_pinfo("Revert", rpatch, cpatch, vpatch)
+
+        # Iterate over required patches in reverse:
+
+        for pval in plist:
+
+            for num, patch in enumerate(reversed(pval)):
+
+                # Revert patch:
+
+                print(f"-- [{num+1}/{len(pval)}]: {patch} - {pval[patch]}")
+
+                print(revert_patch(pval[patch]))
+
+    if args.reset:
+
+        # We want to reset files, no patches included:
+
+        print_rinfo(mfiles)
+
+        # Iterate over files:
+
+        for num, f in enumerate(mfiles):
+
+            # Reset the file:
+
+            print(f"// [{num+1}/{len(mfiles)}]: {f}")
+
+            reset_file(f)
+
+    if args.create:
+
+        print(SEP)
+
+        # We want to create patches
+        # Raise an error if multiple values are provided
+
+        if args.cve and args.vuln:
+
+            print("! Bad Arguments !")
+            print("When creating patches, can't specify CVE and vulnerability")
+
+            exit()
+
+        # Determine path to save to:
+
+        spath: Path = required_dir(ppath)
+
+        if args.cve:
+
+            print("Creating CVE patches...")
+
+            spath = cve_dir(ppath)
+
+        elif args.vuln:
+
+            print("Creating vulnerability patches...")
+
+            spath = vuln_dir(ppath)
+
+        else:
+
+            print("Creating required patches...")
+
+        # Create the directory:
+
+        spath.mkdir(parents=True, exist_ok=True)
+
+        # Generate patches for each file:
+
+        for num, file in enumerate(mfiles):
+
+            # Open up file to write:
+
+            tpath = str(spath / file.name) + ".patch"
+
+            with open(tpath, "w") as fileh:
+
+                print(f"> Creating patch [{num+1}/{len(mfiles)}] - {tpath}")
+
+                # Write patch content:
+
+                fileh.write(create_patch(file))

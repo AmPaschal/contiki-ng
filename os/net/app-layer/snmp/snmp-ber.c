@@ -220,7 +220,14 @@ snmp_ber_encode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
     return 0;
   }
 
-  val = *(snmp_packet->out + 1) + 40 * oid->data[pos];
+  // If the given length is zero, and the pointer is at the start,
+  // We will get an out of bounds error here!
+
+  if (snmp_packet->used == 0) {
+    return 0;
+  }
+
+  val = *(snmp_packet->out + 1) + 40 * oid->data[pos];  // This line is bad!
   snmp_packet->used--;
   snmp_packet->out++;
 

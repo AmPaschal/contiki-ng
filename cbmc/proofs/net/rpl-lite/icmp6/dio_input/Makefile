@@ -14,7 +14,7 @@ OBJ_BITS = 9
 H_ENTRY = dio
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset dio_input.8:1
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset dio_input.8:5
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

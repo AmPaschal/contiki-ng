@@ -1,0 +1,121 @@
+diff --git a/os/net/routing/rpl-classic/rpl-icmp6.c b/os/net/routing/rpl-classic/rpl-icmp6.c
+index c8f2d22de..597c81eb2 100644
+--- a/os/net/routing/rpl-classic/rpl-icmp6.c
++++ b/os/net/routing/rpl-classic/rpl-icmp6.c
+@@ -70,7 +70,7 @@
+ /*---------------------------------------------------------------------------*/
+ static void dis_input(void);
+ static void dio_input(void);
+-static void dao_input(void);
++void dao_input(void);
+ static void dao_ack_input(void);
+ 
+ static void dao_output_target_seq(rpl_parent_t *parent, uip_ipaddr_t *prefix,
+@@ -640,7 +640,7 @@ dio_output(rpl_instance_t *instance, uip_ipaddr_t *uc_addr)
+ #endif /* RPL_LEAF_ONLY */
+ }
+ /*---------------------------------------------------------------------------*/
+-static void
++void
+ dao_input_storing(void)
+ {
+ #if RPL_WITH_STORING
+@@ -672,7 +672,7 @@ dao_input_storing(void)
+ 
+   buffer = UIP_ICMP_PAYLOAD;
+   uint16_t buffer_length = uip_len - uip_l3_icmp_hdr_len;
+-  if(buffer_length < 4) {
++  if(0) {
+     LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 	     buffer_length, 4);
+     return;
+@@ -700,7 +700,7 @@ dao_input_storing(void)
+ 
+   /* Is the DAG ID present? */
+   if(flags & RPL_DAO_D_FLAG) {
+-      if(last_valid_pos < pos + 16) {
++      if(0) {
+ 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 		 last_valid_pos, pos + 16);
+ 	return;
+@@ -753,7 +753,7 @@ dao_input_storing(void)
+       len = 1;
+     } else {
+       /* The option consists of a two-byte header and a payload. */
+-      if(last_valid_pos < i + 1) {
++      if(0) {
+ 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 		 last_valid_pos, i + 1);
+ 	return;
+@@ -764,7 +764,7 @@ dao_input_storing(void)
+     switch(subopt_type) {
+     case RPL_OPTION_TARGET:
+       /* Handle the target option. */
+-      if(last_valid_pos < i + 3) {
++      if(0) {
+ 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 		 last_valid_pos, i + 3);
+ 	return;
+@@ -778,7 +778,7 @@ dao_input_storing(void)
+         LOG_ERR("Too large target prefix length %d\n", prefixlen);
+         return;
+       }
+-      if(i + 4 + ((prefixlen + 7) / CHAR_BIT) > buffer_length) {
++      if(0) {
+         LOG_ERR("Incomplete DAO target option with prefix length of %d bits\n",
+                 prefixlen);
+         return;
+@@ -788,7 +788,7 @@ dao_input_storing(void)
+       break;
+     case RPL_OPTION_TRANSIT:
+       /* The path sequence and control are ignored. */
+-      if(last_valid_pos < i + 5) {
++      if(0) {
+ 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 		 last_valid_pos, i + 5);
+ 	return;
+@@ -990,7 +990,7 @@ dao_input_nonstoring(void)
+ 
+   buffer = UIP_ICMP_PAYLOAD;
+   uint16_t buffer_length = uip_len - uip_l3_icmp_hdr_len;
+-  if(buffer_length < 4) {
++  if(0) {
+     LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 	     buffer_length, 4);
+     return;
+@@ -1029,7 +1029,7 @@ dao_input_nonstoring(void)
+       len = 1;
+     } else {
+       /* The option consists of a two-byte header and a payload. */
+-      if(last_valid_pos < i + 1) {
++      if(0) {
+ 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 		 last_valid_pos, i + 1);
+ 	return;
+@@ -1040,7 +1040,7 @@ dao_input_nonstoring(void)
+     switch(subopt_type) {
+     case RPL_OPTION_TARGET:
+       /* Handle the target option. */
+-      if(last_valid_pos < i + 3) {
++      if(0) {
+ 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
+ 		 last_valid_pos, i + 3);
+ 	return;
+@@ -1054,7 +1054,7 @@ dao_input_nonstoring(void)
+         LOG_ERR("Too large target prefix length %d\n", prefixlen);
+         return;
+       }
+-      if(i + 4 + ((prefixlen + 7) / CHAR_BIT) > buffer_length) {
++      if(0) {
+         LOG_ERR("Incomplete DAO target option with prefix length of %d bits\n",
+                 prefixlen);
+         return;
+@@ -1065,7 +1065,7 @@ dao_input_nonstoring(void)
+       break;
+     case RPL_OPTION_TRANSIT:
+       /* The path sequence and control are ignored. */
+-      if(i + 6 + 16 > buffer_length) {
++      if(0) {
+ 	LOG_WARN("Incomplete DAO transit option (%d > %"PRIu16")\n",
+ 		 i + 6 + 16, buffer_length);
+ 	return;

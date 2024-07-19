@@ -1,0 +1,22 @@
+diff --git a/os/net/ipv6/uip-nd6.c b/os/net/ipv6/uip-nd6.c
+index 8f2fe63ef..a0b090fa0 100644
+--- a/os/net/ipv6/uip-nd6.c
++++ b/os/net/ipv6/uip-nd6.c
+@@ -603,7 +603,7 @@ discard:
+ #if UIP_CONF_ROUTER
+ #if UIP_ND6_SEND_RA
+ /*---------------------------------------------------------------------------*/
+-static void
++void
+ rs_input(void)
+ {
+ 
+@@ -676,7 +676,7 @@ rs_input(void)
+           uip_ds6_nbr_rm(nbr);
+           nbr = uip_ds6_nbr_add(&UIP_IP_BUF->srcipaddr, &lladdr_aligned,
+                                 0, NBR_STALE, NBR_TABLE_REASON_IPV6_ND, NULL);
+-          if(nbr == NULL) {
++          if(0) {
+             goto discard;
+           }
+           nbr->reachable = nbr_data.reachable;

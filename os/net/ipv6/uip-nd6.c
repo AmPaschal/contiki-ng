@@ -603,7 +603,7 @@ discard:
 #if UIP_CONF_ROUTER
 #if UIP_ND6_SEND_RA
 /*---------------------------------------------------------------------------*/
-static void
+void
 rs_input(void)
 {
 

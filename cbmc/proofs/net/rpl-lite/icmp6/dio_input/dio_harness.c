@@ -18,7 +18,7 @@
 extern uint16_t uip_len;
 uint16_t uip_ext_len;
 
-void harness2() {
+void harness() {
 
     // Length will not exceed buffer size:
 
@@ -30,29 +30,3 @@ void harness2() {
 
     dio_input();
 }
-
-// Link in a global variable in use
-
-extern uint8_t gvar;
-
-// Stub a complicated function
-
-int comp_func() {}
-
-void harness() {
-
-    // Model input argument
-
-    uint8_t inp;
-
-    __CPROVER_assume(inp <= 100);
-
-    // Model global variable
-
-    __CPROVER_assume(gvar >= 200);
-
-    // Call harnessed function
-
-    harnessed_function(inp);
-}
-

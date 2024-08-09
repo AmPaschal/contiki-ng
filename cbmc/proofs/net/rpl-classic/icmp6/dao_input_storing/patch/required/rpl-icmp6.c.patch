@@ -1,0 +1,22 @@
+diff --git a/os/net/routing/rpl-classic/rpl-icmp6.c b/os/net/routing/rpl-classic/rpl-icmp6.c
+index c8f2d22de..7f7e1b0a6 100644
+--- a/os/net/routing/rpl-classic/rpl-icmp6.c
++++ b/os/net/routing/rpl-classic/rpl-icmp6.c
+@@ -70,7 +70,7 @@
+ /*---------------------------------------------------------------------------*/
+ static void dis_input(void);
+ static void dio_input(void);
+-static void dao_input(void);
++void dao_input(void);
+ static void dao_ack_input(void);
+ 
+ static void dao_output_target_seq(rpl_parent_t *parent, uip_ipaddr_t *prefix,
+@@ -640,7 +640,7 @@ dio_output(rpl_instance_t *instance, uip_ipaddr_t *uc_addr)
+ #endif /* RPL_LEAF_ONLY */
+ }
+ /*---------------------------------------------------------------------------*/
+-static void
++void
+ dao_input_storing(void)
+ {
+ #if RPL_WITH_STORING

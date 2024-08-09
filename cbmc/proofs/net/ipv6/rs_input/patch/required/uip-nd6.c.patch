@@ -1,0 +1,13 @@
+diff --git a/os/net/ipv6/uip-nd6.c b/os/net/ipv6/uip-nd6.c
+index 8f2fe63ef..8d047cb61 100644
+--- a/os/net/ipv6/uip-nd6.c
++++ b/os/net/ipv6/uip-nd6.c
+@@ -603,7 +603,7 @@ discard:
+ #if UIP_CONF_ROUTER
+ #if UIP_ND6_SEND_RA
+ /*---------------------------------------------------------------------------*/
+-static void
++void
+ rs_input(void)
+ {
+ 

@@ -1,0 +1,39 @@
+diff --git a/os/net/ipv6/sicslowpan.c b/os/net/ipv6/sicslowpan.c
+index 71d659a5c..bf7cb440b 100644
+--- a/os/net/ipv6/sicslowpan.c
++++ b/os/net/ipv6/sicslowpan.c
+@@ -408,14 +408,14 @@ add_fragment(uint16_t tag, uint16_t frag_size, uint8_t offset)
+ /*---------------------------------------------------------------------------*/
+ /* Copy all the fragments that are associated with a specific context
+    into uip */
+-static bool
++bool
+ copy_frags2uip(int context)
+ {
+   int i;
+ 
+   /* Check length fields before proceeding. */
+   if(frag_info[context].len < frag_info[context].first_frag_len ||
+-     frag_info[context].len > sizeof(uip_buf)) {
++     frag_info[context].len > sizeof(uip_buf) || frag_info[context].first_frag_len > SICSLOWPAN_FIRST_FRAGMENT_SIZE) {
+     LOG_WARN("input: invalid total size of fragments\n");
+     clear_fragments(context);
+     return false;
+@@ -432,7 +432,7 @@ copy_frags2uip(int context)
+   for(i = 0; i < SICSLOWPAN_FRAGMENT_BUFFERS; i++) {
+     /* And also copy all matching fragments */
+     if(frag_buf[i].len > 0 && frag_buf[i].index == context) {
+-      if(((size_t)frag_buf[i].offset << 3) + frag_buf[i].len > sizeof(uip_buf)) {
++      if(((size_t)frag_buf[i].offset << 3) + frag_buf[i].len > sizeof(uip_buf) || frag_buf[i].len > SICSLOWPAN_FRAGMENT_SIZE) {
+         LOG_WARN("input: invalid fragment offset\n");
+         clear_fragments(context);
+         return false;
+@@ -1092,7 +1092,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
+ 
+   /* at least two byte will be used for the encoding */
+   cmpr_len = packetbuf_datalen();  // Maxmum buffer size
+-  if(cmpr_len < packetbuf_hdr_len + 2) {  // NEEDS to be <=
++  if(cmpr_len <= packetbuf_hdr_len + 2) {  // NEEDS to be <=
+     return false;
+   }
+   iphc_ptr = packetbuf_ptr + packetbuf_hdr_len + 2;

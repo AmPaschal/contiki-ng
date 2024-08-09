@@ -1,0 +1,22 @@
+diff --git a/os/net/ipv6/sicslowpan.c b/os/net/ipv6/sicslowpan.c
+index 71d659a5c..9291b5d0e 100644
+--- a/os/net/ipv6/sicslowpan.c
++++ b/os/net/ipv6/sicslowpan.c
+@@ -408,7 +408,7 @@ add_fragment(uint16_t tag, uint16_t frag_size, uint8_t offset)
+ /*---------------------------------------------------------------------------*/
+ /* Copy all the fragments that are associated with a specific context
+    into uip */
+-static bool
++bool
+ copy_frags2uip(int context)
+ {
+   int i;
+@@ -1092,7 +1092,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
+ 
+   /* at least two byte will be used for the encoding */
+   cmpr_len = packetbuf_datalen();  // Maxmum buffer size
+-  if(cmpr_len < packetbuf_hdr_len + 2) {  // NEEDS to be <=
++  if(cmpr_len <= packetbuf_hdr_len + 2) {  // NEEDS to be <=
+     return false;
+   }
+   iphc_ptr = packetbuf_ptr + packetbuf_hdr_len + 2;

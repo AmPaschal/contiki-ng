@@ -60,8 +60,8 @@ static uint8_t hdrlen;
    msp430 or OpenRISC), having a potentially misaligned packet buffer may lead to
    problems when accessing words. */
 static uint32_t packetbuf_aligned[(PACKETBUF_SIZE + 3) / 4];
-// uint8_t *packetbuf = (uint8_t *)packetbuf_aligned;  // This line really confuses CBMC! Simpler version below V
-uint8_t packetbuf[PACKETBUF_SIZE];
+uint8_t *packetbuf = (uint8_t *)packetbuf_aligned;  // This line really confuses CBMC! Simpler version below V
+// uint8_t packetbuf[PACKETBUF_SIZE];
 
 #define DEBUG 0
 #if DEBUG

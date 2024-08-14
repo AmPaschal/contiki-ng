@@ -12,7 +12,7 @@ LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-ext-header.c $(ROOT)/os/net/ipv6/u
 H_ENTRY = srhu
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --unwind 1 --nondet-static --signed-overflow-check --unsigned-overflow-check --unwindset uipbuf_search_header.0:5
+H_CBMCFLAGS = --unwind 1 --nondet-static --signed-overflow-check --unsigned-overflow-check --unwindset uipbuf_search_header.0:10
 
 # Extra header defintiions to be passed during compilation
 H_DEF = -D'RPL_CONF_WITH_NON_STORING=1' -D'UIP_CONF_BUFFER_SIZE=50'

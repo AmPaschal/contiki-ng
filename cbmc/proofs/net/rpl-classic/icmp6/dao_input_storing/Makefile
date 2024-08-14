@@ -2,6 +2,8 @@
 # Be aware of how many directories deep you go!
 ROOT = ../../../../../..
 
+OBJ_BITS = 10
+
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
@@ -11,8 +13,7 @@ LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-icmp6.c $(ROOT)/os/net/ipv6/uipbuf
 H_ENTRY = dis
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
-
+H_CBMCFLAGS = --nondet-static --unwind 1 --malloc-may-fail --malloc-fail-null --unwindset dao_input_storing.14:20
 # Extra header defintiions to be passed during compilation
 H_DEF = -D'UIP_CONF_BUFFER_SIZE=500'
 

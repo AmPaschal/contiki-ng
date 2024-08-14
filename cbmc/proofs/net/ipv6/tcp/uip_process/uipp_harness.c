@@ -26,6 +26,37 @@ uint16_t chksum(uint16_t sum, const uint8_t *data, uint16_t len) {
     return sum;
 }
 
+uint16_t uip_icmp6chksum(void) {
+
+    uint16_t sum;
+
+    return sum;
+}
+
+uip_ds6_nbr_t *
+uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
+                uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
+                void *data) {
+
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
+
+    // Allocate NBR table entry:
+
+    uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
+
+    // IP address MUST be the same as provided:
+
+    nbr->ipaddr = *ipaddr;
+
+    // Return entry:
+
+    return nbr;
+}
+
 uint8_t uip_icmp6_input(uint8_t type, uint8_t icode) {}
 
 // uint8_t* uipbuf_get_next_header(uint8_t *buffer, uint16_t size, uint8_t *protocol, bool start) {
@@ -70,9 +101,9 @@ void harness() {
 
     // Header length will not exceed uip_len:
 
-    uip_ext_len = 40;
+    // uip_ext_len = 40;
 
-    __CPROVER_assume(uip_ext_len <= uip_len);
+    __CPROVER_assume(uip_ext_len + UIP_IPH_LEN <= uip_len);
 
     // Define uip connection data
 

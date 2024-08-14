@@ -1,0 +1,13 @@
+diff --git a/os/net/mac/ble/ble-l2cap.c b/os/net/mac/ble/ble-l2cap.c
+index 538c22ff4..e807fb6f2 100644
+--- a/os/net/mac/ble/ble-l2cap.c
++++ b/os/net/mac/ble/ble-l2cap.c
+@@ -412,7 +412,7 @@ input_l2cap_frame_signal_channel(uint8_t *data, uint8_t data_len)
+   }
+ }
+ /*---------------------------------------------------------------------------*/
+-static void
++void
+ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t data_len)
+ {
+   uint16_t frame_len;

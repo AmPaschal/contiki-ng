@@ -17,7 +17,7 @@ H_ENTRY = iffc
 H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Extra header defintiions to be passed during compilation
-H_DEF = 
+H_DEF =
 
 # Extra CBMC includes to be passed during compilation
 H_INC = -I..

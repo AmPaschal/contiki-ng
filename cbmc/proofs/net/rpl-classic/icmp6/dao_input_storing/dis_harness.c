@@ -18,10 +18,16 @@
 #include "gnet/packetbuf-generic.h"
 
 extern uint16_t uip_len;
-uint16_t uip_ext_len;  // Define header extension length
+extern uint16_t uip_ext_len;  // Define header extension length
 
 rpl_instance_t *
 rpl_get_instance(uint8_t instance_id) {
+
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
 
     // Allocate struct:
 
@@ -76,6 +82,12 @@ rpl_find_parent(rpl_dag_t *dag, uip_ipaddr_t *addr) {
 uip_ds6_route_t *
 uip_ds6_route_lookup(const uip_ipaddr_t *addr) {
 
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
+
     // Allocate data for route:
 
     uip_ds6_route_t* route = (uip_ds6_route_t*)malloc(sizeof(uip_ds6_route_t));
@@ -105,12 +117,76 @@ rpl_add_route(rpl_dag_t *dag, uip_ipaddr_t *prefix, int prefix_len,
 const uip_ipaddr_t *
 uip_ds6_route_nexthop(uip_ds6_route_t *route) {
 
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
+
     // This function may return NULL:
 
     uip_ipaddr_t* ipaddr = (uip_ipaddr_t*)malloc(sizeof(uip_ipaddr_t));
 
     return ipaddr;
 }
+
+uip_ipaddr_t *
+rpl_parent_get_ipaddr(rpl_parent_t *p)
+{
+    // Just allocate an IP address struct:
+
+    uip_ipaddr_t* ipaddr = (uip_ipaddr_t*)malloc(sizeof(uip_ipaddr_t));
+
+    return ipaddr;
+}
+
+uip_ds6_nbr_t *
+uip_ds6_nbr_lookup(const uip_ipaddr_t *ipaddr) {
+
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
+
+    // Allocate an NBR type:
+    // (May be NULL)
+
+    uip_ds6_nbr_t* nbrt = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
+
+    // IP address will match:
+
+    nbrt->ipaddr = *ipaddr;
+
+    return nbrt;
+}
+
+uip_ds6_nbr_t *
+uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
+                uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
+                void *data) {
+
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
+
+    // Allocate NBR table entry:
+
+    uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
+
+    // IP address MUST be the same as provided:
+
+    nbr->ipaddr = *ipaddr;
+
+    // Return entry:
+
+    return nbr;
+}
+
+void
+uip_icmp6_send(const uip_ipaddr_t *dest, int type, int code, int payload_len) {}
 
 void harness() {
 
@@ -120,7 +196,7 @@ void harness() {
 
     // Total length of extension headers will not exceed buffer size:
 
-    __CPROVER_assume(uip_ext_len <= uip_len);
+    __CPROVER_assume(uip_l3_icmp_hdr_len < uip_len);
 
     // Prepare packetbuf:
 

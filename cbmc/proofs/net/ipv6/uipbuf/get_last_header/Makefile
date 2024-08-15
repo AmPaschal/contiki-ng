@@ -1,19 +1,17 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = ../../../../..
+ROOT = ../../../../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip-ds6.c
-
-#LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip-ds6.c $(ROOT)/os/net/linkaddr.c $(ROOT)/os/net/ipv6/uipbuf.c
+LINK = $(ROOT)/os/net/ipv6/uipbuf.c $(ROOT)/os/net/ipv6/uip6.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = uhi
+H_ENTRY = glh
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset addr_context_lookup_by_number.0:2 --unwindset uncompress_hdr_iphc.20:10
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset uipbuf_get_last_header.0:50 --unsigned-overflow-check --pointer-check
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 
@@ -21,8 +19,5 @@ H_DEF =
 # Extra CBMC includes to be passed during compilation
 H_INC = 
 
-# Need to increace object bits due to complexity...
-OBJ_BITS = 11
-
 # Include our special build file
-include ../../../Makefile.include
+include ../../../../Makefile.include

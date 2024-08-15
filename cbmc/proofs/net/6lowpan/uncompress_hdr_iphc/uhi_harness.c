@@ -34,7 +34,7 @@ void harness() {
 
     __CPROVER_assume(datalen <= outb_size);
     __CPROVER_assume(outb_size <= UIP_BUFSIZE);
-    __CPROVER_assume(outb_size >= sizeof(struct uip_ip_hdr));
+    // __CPROVER_assume(outb_size >= sizeof(struct uip_ip_hdr));
 
     // Create out buffer:
     // (Buffer won't be NULL)
@@ -66,7 +66,7 @@ void harness() {
     
     // Init 6LowPAN
 
-    sicslowpan_init();
+    // sicslowpan_init();
 
-    uncompress_hdr_iphc(outb, outb_size, ip_legnth);
+    bool res = uncompress_hdr_iphc(outb, outb_size, ip_legnth);
 }

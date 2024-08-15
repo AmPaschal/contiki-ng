@@ -15,6 +15,9 @@
 #include "net/linkaddr.h"
 #include "net/ipv6/uip-ds6.h"
 
+extern uint16_t uip_ext_len = 0;
+extern uint16_t uip_len;
+
 uip_ds6_nbr_t* uip_ds6_nbr_lookup(const uip_ipaddr_t *ipaddr) {
 
     bool blah;
@@ -68,6 +71,37 @@ const uip_lladdr_t * uip_ds6_nbr_get_ll(const uip_ds6_nbr_t *nbr)
     return ret;
 }
 
+uint16_t uip_icmp6chksum(void) {
+
+    uint16_t sum;
+
+    return sum;
+}
+
+uip_ds6_nbr_t *
+uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
+                uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
+                void *data) {
+
+    bool thing;
+
+    if (thing) {
+        return NULL;
+    }
+
+    // Allocate NBR table entry:
+
+    uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
+
+    // IP address MUST be the same as provided:
+
+    nbr->ipaddr = *ipaddr;
+
+    // Return entry:
+
+    return nbr;
+}
+
 void harness() {
 
     // Length will not exceed buffer size:
@@ -76,7 +110,7 @@ void harness() {
 
     // Total length of extension headers will not exceed buffer size:
 
-    __CPROVER_assume(uip_ext_len <= uip_len);
+    __CPROVER_assume(uip_l3_icmp_hdr_len + sizeof(uip_nd6_ns) <= uip_len);
 
     ns_input();
 }

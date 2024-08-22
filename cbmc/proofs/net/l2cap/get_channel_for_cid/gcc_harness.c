@@ -12,9 +12,6 @@
 #include "contiki.h"
 #include "net/mac/ble/ble-l2cap.h"
 
-#include "gnet/packetbuf-generic.h"
-#include "l2cap-struct.h"
-
 extern uint8_t l2cap_channel_count;
 
 void harness() {
@@ -27,12 +24,12 @@ void harness() {
 
     // get_channel_for_cid(cid);
 
-    l2cap_channel_t* chan = get_channel_for_cid(cid);
+    uint8_t* chan = get_channel_for_cid(cid);
 
     if (chan != NULL) {
 
         // Access some aspect of this channel:
 
-        l2cap_channel_t chan_obj = *chan;
+        uint8_t chan_obj = *chan;
     }
 }

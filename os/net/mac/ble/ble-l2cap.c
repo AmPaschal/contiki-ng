@@ -84,7 +84,7 @@ typedef struct {
   linkaddr_t peer_addr;
 } l2cap_channel_t;
 
-static uint8_t l2cap_channel_count;
+uint8_t l2cap_channel_count;
 static l2cap_channel_t l2cap_channels[L2CAP_CHANNELS];
 static process_event_t l2cap_tx_event;
 /*---------------------------------------------------------------------------*/
@@ -102,12 +102,12 @@ get_channel_for_addr(const linkaddr_t *peer_addr)
   return NULL;
 }
 /*---------------------------------------------------------------------------*/
-static l2cap_channel_t *
+l2cap_channel_t *
 get_channel_for_cid(uint16_t own_cid)
 {
-  int16_t i = own_cid - L2CAP_FLOW_CHANNEL;
+  int8_t i = own_cid - L2CAP_FLOW_CHANNEL;
   if(i >= 0 && i < l2cap_channel_count) {
-    return &l2cap_channels[i];
+    return &l2cap_channels[own_cid - L2CAP_FLOW_CHANNEL];
   } else {
     return NULL;
   }

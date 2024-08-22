@@ -15,11 +15,17 @@
 #include "gnet/packetbuf-generic.h"
 #include "l2cap-struct.h"
 
+extern uint8_t l2cap_channel_count;
+
 void harness() {
 
     // Define unconstrained CID:
 
     uint16_t cid;
+
+    __CPROVER_assume(l2cap_channel_count <= L2CAP_CHANNELS);
+
+    // get_channel_for_cid(cid);
 
     l2cap_channel_t* chan = get_channel_for_cid(cid);
 
@@ -27,6 +33,6 @@ void harness() {
 
         // Access some aspect of this channel:
 
-        uint16_t tc = chan->channel_own.cid;
+        l2cap_channel_t chan_obj = *chan;
     }
 }

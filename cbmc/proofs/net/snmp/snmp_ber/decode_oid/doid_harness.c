@@ -15,16 +15,16 @@
 #include "net/app-layer/snmp/snmp.h"
 #include "net/app-layer/snmp/snmp-ber.h"
 
-#include "snmp-generic.h"
+// #include "snmp-generic.h"
 
-div_t div (int __numer, int __denom) {
+// div_t div (int __numer, int __denom) {
 
-    // Create unconstrained div type:
+//     // Create unconstrained div type:
 
-    div_t dtype;
+//     div_t dtype;
 
-    return dtype;
-}
+//     return dtype;
+// }
 
 void harness() {
 
@@ -34,7 +34,12 @@ void harness() {
 
     // Initialize packet:
 
-    init_packet_in(&pack);
+    int size;
+
+    pack.in = (uint8_t *) malloc(sizeof(uint8_t) * size);
+    pack.used = size;
+
+    // init_packet_in(&pack);
 
     // Create OID struct
 

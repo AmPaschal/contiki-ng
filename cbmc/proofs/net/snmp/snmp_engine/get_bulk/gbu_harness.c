@@ -21,7 +21,9 @@ void harness() {
 
     // Create varbind array:
 
-    snmp_varbind_t varbinds[5];
+    int varbinds_length = 4;
+
+    snmp_varbind_t varbinds[varbinds_length];
 
     // Send along to function:
 

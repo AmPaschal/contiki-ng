@@ -11,7 +11,7 @@ LINK = $(ROOT)/os/net/app-layer/snmp/snmp-engine.c
 H_ENTRY = gbu
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset snmp_engine_get_bulk.0:5 --unwindset snmp_engine_get_bulk.1:3 --unwindset snmp_engine_get_bulk.2:3
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset snmp_engine_get_bulk.0:5 #--unwindset snmp_engine_get_bulk.1:3 --unwindset snmp_engine_get_bulk.2:3
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

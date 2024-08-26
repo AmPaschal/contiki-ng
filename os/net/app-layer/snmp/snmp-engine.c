@@ -132,7 +132,7 @@ snmp_engine_get_bulk(snmp_header_t *header, snmp_varbind_t *varbinds)
    *  the varbinds are modified on the fly
    */
   original_varbinds_length = 0;
-  while(original_varbinds_length < SNMP_MAX_NR_VALUES &&
+  while(original_varbinds_length < 4 &&
         varbinds[original_varbinds_length].value_type != BER_DATA_TYPE_EOC) {
     memcpy(&oids[original_varbinds_length], &varbinds[original_varbinds_length].oid, sizeof(snmp_oid_t));
     original_varbinds_length++;

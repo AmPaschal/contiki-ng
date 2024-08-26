@@ -23,7 +23,12 @@ void harness() {
 
     // Initialize:
 
-    init_packet_in(&pack);
+    // init_packet_in(&pack);
+
+    int size;
+    __CPROVER_assume(size > 0 && size < 100);
+    pack.in = malloc(size);
+    pack.used = size;
 
     // Create header:
 
@@ -32,7 +37,7 @@ void harness() {
     // Determine varbind array size:
     // (TODO: Make unconstrained to test large varbind sizes?)
 
-    const uint32_t vsize = SNMP_MAX_NR_VALUES;
+    // const uint32_t vsize = SNMP_MAX_NR_VALUES;
 
     // Create varbind array:
 

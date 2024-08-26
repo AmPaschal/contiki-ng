@@ -11,7 +11,7 @@ LINK = $(ROOT)/os/net/app-layer/snmp/snmp-message.c $(ROOT)/cbmc/proofs/net/snmp
 H_ENTRY = mde
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --havoc-undefined-functions --unwind 1 --unwindset snmp_message_decode.27:3
+H_CBMCFLAGS = --nondet-static --havoc-undefined-functions --z3 # --unwind 1 --unwindset snmp_message_decode.27:3
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

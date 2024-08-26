@@ -292,10 +292,10 @@ snmp_message_decode(snmp_packet_t *snmp_packet, snmp_header_t *header, snmp_varb
   }
 
   for(i = 0; snmp_packet->used > 0; ++i) {
-    if(i >= SNMP_MAX_NR_VALUES) {  // Remove this for CVE-2020-14934
-      LOG_DBG("OID's overflow\n");
-      return 0;
-    }
+    // if(i >= SNMP_MAX_NR_VALUES) {  // Remove this for CVE-2020-14934
+    //   LOG_DBG("OID's overflow\n");
+    //   return 0;
+    // }
 
     if(!snmp_ber_decode_type(snmp_packet, &type)) {
       LOG_DBG("Could not decode type\n");

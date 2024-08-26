@@ -28,6 +28,7 @@ void harness() {
     int size;
     __CPROVER_assume(size > 0 && size < 100);
     pack.in = malloc(size);
+    // __CPROVER_assume(pack.in != NULL);
     pack.used = size;
 
     // Create header:

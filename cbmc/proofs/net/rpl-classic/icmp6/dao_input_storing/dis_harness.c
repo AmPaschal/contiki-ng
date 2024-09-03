@@ -39,7 +39,7 @@ rpl_get_instance(uint8_t instance_id) {
 
     // Will be valid for size:
 
-    __CPROVER_assume(__CPROVER_rw_ok(inst, sizeof(rpl_instance_t)));
+    // __CPROVER_assume(__CPROVER_rw_ok(inst, sizeof(rpl_instance_t)));
 
     // Create DAG:
 
@@ -51,7 +51,7 @@ rpl_get_instance(uint8_t instance_id) {
 
     // Will be valid for size:
 
-    __CPROVER_assume(__CPROVER_rw_ok(dag, sizeof(dag)));
+    // __CPROVER_assume(__CPROVER_rw_ok(dag, sizeof(dag)));
 
     // Set dag and instance pointers:
 
@@ -70,11 +70,11 @@ rpl_find_parent(rpl_dag_t *dag, uip_ipaddr_t *addr) {
 
     // Won't be NULL:
 
-    __CPROVER_assume(p != NULL);
+    // __CPROVER_assume(p != NULL);
 
     // Will be valid for size:
 
-    __CPROVER_assume(__CPROVER_rw_ok(p, sizeof(rpl_parent_t)));
+    // __CPROVER_assume(__CPROVER_rw_ok(p, sizeof(rpl_parent_t)));
 
     return p;
 }
@@ -84,9 +84,9 @@ uip_ds6_route_lookup(const uip_ipaddr_t *addr) {
 
     bool thing;
 
-    if (thing) {
-        return NULL;
-    }
+    // if (thing) {
+    //     return NULL;
+    // }
 
     // Allocate data for route:
 
@@ -102,7 +102,7 @@ uip_ds6_route_lookup(const uip_ipaddr_t *addr) {
 
     // __CPROVER_assume(__CPROVER_rw_ok(route, sizeof(uip_ds6_route_t)));
 
-    return route;
+    return thing ? NULL : route;
 }
 
 uip_ds6_route_t *
@@ -114,79 +114,79 @@ rpl_add_route(rpl_dag_t *dag, uip_ipaddr_t *prefix, int prefix_len,
     return uip_ds6_route_lookup(NULL);
 }
 
-const uip_ipaddr_t *
-uip_ds6_route_nexthop(uip_ds6_route_t *route) {
+// const uip_ipaddr_t *
+// uip_ds6_route_nexthop(uip_ds6_route_t *route) {
 
-    bool thing;
+//     bool thing;
 
-    if (thing) {
-        return NULL;
-    }
+//     if (thing) {
+//         return NULL;
+//     }
 
-    // This function may return NULL:
+//     // This function may return NULL:
 
-    uip_ipaddr_t* ipaddr = (uip_ipaddr_t*)malloc(sizeof(uip_ipaddr_t));
+//     uip_ipaddr_t* ipaddr = (uip_ipaddr_t*)malloc(sizeof(uip_ipaddr_t));
 
-    return ipaddr;
-}
+//     return ipaddr;
+// }
 
-uip_ipaddr_t *
-rpl_parent_get_ipaddr(rpl_parent_t *p)
-{
-    // Just allocate an IP address struct:
+// uip_ipaddr_t *
+// rpl_parent_get_ipaddr(rpl_parent_t *p)
+// {
+//     // Just allocate an IP address struct:
 
-    uip_ipaddr_t* ipaddr = (uip_ipaddr_t*)malloc(sizeof(uip_ipaddr_t));
+//     uip_ipaddr_t* ipaddr = (uip_ipaddr_t*)malloc(sizeof(uip_ipaddr_t));
 
-    return ipaddr;
-}
+//     return ipaddr;
+// }
 
-uip_ds6_nbr_t *
-uip_ds6_nbr_lookup(const uip_ipaddr_t *ipaddr) {
+// uip_ds6_nbr_t *
+// uip_ds6_nbr_lookup(const uip_ipaddr_t *ipaddr) {
 
-    bool thing;
+//     bool thing;
 
-    if (thing) {
-        return NULL;
-    }
+//     if (thing) {
+//         return NULL;
+//     }
 
-    // Allocate an NBR type:
-    // (May be NULL)
+//     // Allocate an NBR type:
+//     // (May be NULL)
 
-    uip_ds6_nbr_t* nbrt = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
+//     uip_ds6_nbr_t* nbrt = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
 
-    // IP address will match:
+//     // IP address will match:
 
-    nbrt->ipaddr = *ipaddr;
+//     nbrt->ipaddr = *ipaddr;
 
-    return nbrt;
-}
+//     return nbrt;
+// }
 
-uip_ds6_nbr_t *
-uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
-                uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
-                void *data) {
+// uip_ds6_nbr_t *
+// uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
+//                 uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
+//                 void *data) {
 
-    bool thing;
+//     bool thing;
 
-    if (thing) {
-        return NULL;
-    }
+//     if (thing) {
+//         return NULL;
+//     }
 
-    // Allocate NBR table entry:
+//     // Allocate NBR table entry:
 
-    uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
+//     uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
 
-    // IP address MUST be the same as provided:
+//     // IP address MUST be the same as provided:
 
-    nbr->ipaddr = *ipaddr;
+//     nbr->ipaddr = *ipaddr;
 
-    // Return entry:
+//     // Return entry:
 
-    return nbr;
-}
+//     return nbr;
+// }
 
-void
-uip_icmp6_send(const uip_ipaddr_t *dest, int type, int code, int payload_len) {}
+// void
+// uip_icmp6_send(const uip_ipaddr_t *dest, int type, int code, int payload_len) {}
 
 void harness() {
 
@@ -200,7 +200,7 @@ void harness() {
 
     // Prepare packetbuf:
 
-    init_packetbuf();
+    // init_packetbuf();
 
     dao_input_storing();
 }

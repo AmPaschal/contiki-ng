@@ -435,12 +435,6 @@ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t
     	return;
     }
 
-    if (2 > data_len - 4) {
-      LOG_WARN("l2cap_frame: source buffer not large enough");
-      /* Source buffer is not large enough to contain necessary data */
-      return;
-    }
-
     memcpy(&channel->rx_buffer.sdu_length, &data[4], 2);
 
     if (payload_len > data_len - 6) {

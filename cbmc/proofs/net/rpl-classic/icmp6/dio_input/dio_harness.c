@@ -18,7 +18,7 @@
 #include "gnet/packetbuf-generic.h"
 
 extern uint16_t uip_len;
-uint16_t uip_ext_len;  // Define header extension length
+// uint16_t uip_ext_len;  // Define header extension length
 
 void harness() {
 

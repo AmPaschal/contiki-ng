@@ -69,7 +69,7 @@
 
 /*---------------------------------------------------------------------------*/
 static void dis_input(void);
-static void dio_input(void);
+void dio_input(void);
 static void dao_input(void);
 static void dao_ack_input(void);
 
@@ -279,7 +279,7 @@ dis_output(uip_ipaddr_t *addr)
   uip_icmp6_send(addr, ICMP6_RPL, RPL_CODE_DIS, 2);
 }
 /*---------------------------------------------------------------------------*/
-static void
+void
 dio_input(void)
 {
   unsigned char *buffer;
@@ -350,7 +350,7 @@ dio_input(void)
       len = 2 + buffer[i + 1];
     }
 
-    if(len + i > buffer_length) {
+    if(len + i > buffer_length) { // Should this be len + i >= buffer_length?
       LOG_WARN("Invalid DIO packet\n");
       RPL_STAT(rpl_stats.malformed_msgs++);
       goto discard;
@@ -451,12 +451,12 @@ dio_input(void)
       }
       dio.prefix_info.length = buffer[i + 2];
 
-      if(dio.prefix_info.length > sizeof(uip_ipaddr_t) * 8) {
-        LOG_WARN("Invalid DAG prefix info, len %u > %u\n",
-                 dio.prefix_info.length, (unsigned)(sizeof(uip_ipaddr_t) * 8));
-        RPL_STAT(rpl_stats.malformed_msgs++);
-        goto discard;
-      }
+      // if(dio.prefix_info.length > sizeof(uip_ipaddr_t) * 8) {
+      //   LOG_WARN("Invalid DAG prefix info, len %u > %u\n",
+      //            dio.prefix_info.length, (unsigned)(sizeof(uip_ipaddr_t) * 8));
+      //   RPL_STAT(rpl_stats.malformed_msgs++);
+      //   goto discard;
+      // }
 
       dio.prefix_info.flags = buffer[i + 3];
       /* valid lifetime is ingnored for now - at i + 4 */

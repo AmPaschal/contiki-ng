@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "rpl.h": "c",
+        "contiki.h": "c",
+        "uipopt.h": "c",
+        "contiki-conf.h": "c",
+        "board.h": "c",
+        "nvic.h": "c",
+        "cc2538_cm3.h": "c",
+        "uip.h": "c",
+        "uipbuf.h": "c",
+        "packetbuf-generic.h": "c",
+        "rpl-conf.h": "c"
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "C_Cpp.errorSquiggles": "disabled"
+}

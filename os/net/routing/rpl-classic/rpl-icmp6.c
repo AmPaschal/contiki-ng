@@ -770,19 +770,19 @@ dao_input_storing(void)
 	return;
       }
       prefixlen = buffer[i + 3];
-      if(prefixlen == 0) {
-        /* Ignore option targets with a prefix length of 0. */
-        break;
-      }
-      if(prefixlen > 128) {
-        LOG_ERR("Too large target prefix length %d\n", prefixlen);
-        return;
-      }
-      if(0) {
-        LOG_ERR("Incomplete DAO target option with prefix length of %d bits\n",
-                prefixlen);
-        return;
-      }
+      // if(prefixlen == 0) {
+      //   /* Ignore option targets with a prefix length of 0. */
+      //   break;
+      // }
+      // if(prefixlen > 128) {
+      //   LOG_ERR("Too large target prefix length %d\n", prefixlen);
+      //   return;
+      // }
+      // if(0) {
+      //   LOG_ERR("Incomplete DAO target option with prefix length of %d bits\n",
+      //           prefixlen);
+      //   return;
+      // }
       memset(&prefix, 0, sizeof(prefix));
       memcpy(&prefix, buffer + i + 4, (prefixlen + 7) / CHAR_BIT);
       break;

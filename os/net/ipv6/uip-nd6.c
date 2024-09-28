@@ -187,7 +187,7 @@ ns_input(void)
 
   if (uip_l3_icmp_hdr_len + sizeof(uip_nd6_ns) > uip_len)
   {
-    LOG_ERR("Not enough space for cast");
+    LOG_ERR("Insufficient data for reading ND6 NS header fields");
     goto discard;
   }
 

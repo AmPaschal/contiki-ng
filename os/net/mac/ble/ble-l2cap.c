@@ -429,19 +429,14 @@ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t
     memcpy(&frame_len, &data[0], 2);
     payload_len = frame_len - 2;
 
-    if(payload_len > BLE_L2CAP_NODE_MTU) {
-    	LOG_WARN("l2cap_frame: illegal L2CAP frame payload_len: %d\n", payload_len);
+    if (payload_len > BLE_L2CAP_NODE_MTU || payload_len > data_len - 6)
+    {
+      LOG_WARN("l2cap_frame: illegal L2CAP frame payload_len: %d\n", payload_len);
     	/* the payload length may not be larger than the destination buffer */
     	return;
     }
 
     memcpy(&channel->rx_buffer.sdu_length, &data[4], 2);
-
-    if (payload_len > data_len - 6) {
-      LOG_WARN("l2cap_frame: source buffer not large enough");
-      /* Source buffer is not large enough to contain necessary data */
-      return;
-    }
 
     memcpy(channel->rx_buffer.sdu, &data[6], payload_len);
     channel->rx_buffer.current_index = payload_len;
@@ -450,17 +445,11 @@ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t
     memcpy(&frame_len, &data[0], 2);
     payload_len = frame_len;
     
-    if(payload_len > BLE_L2CAP_NODE_MTU - channel->rx_buffer.current_index) {
+    if(payload_len > BLE_L2CAP_NODE_MTU - channel->rx_buffer.current_index || payload_len > data_len - 4) {
     	LOG_WARN("l2cap_frame: illegal L2CAP frame payload_len: %d\n", payload_len);
     	/* the current index plus the payload length may not be larger than 
 	 * the destination buffer */
     	return;
-    }
-
-    if (payload_len > data_len - 4) {
-      LOG_WARN("l2cap_frame: source buffer not large enough");
-      /* Source buffer is not large enough to contain necessary data */
-      return;
     }
 
     memcpy(&channel->rx_buffer.sdu[channel->rx_buffer.current_index], &data[4], payload_len);

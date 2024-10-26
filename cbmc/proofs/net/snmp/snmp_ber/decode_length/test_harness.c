@@ -5,7 +5,7 @@
 #endif
 
 // tag-#anon#ST[U16'used'|U16'max'|*{U8}'in'|*{U8}'out']
-// file ../../../../../../os/net/app-layer/snmp/snmp.h line 206
+// file ../../../../../../os/net/app-layer/snmp/snmp.h line 207
 struct anonymous$0;
 
 // tag-snmp_oid_s
@@ -104,6 +104,8 @@ struct snmp_oid_s
   uint32_t data[16];
   // length
   uint8_t length;
+  // test
+  uint8_t *test;
 };
 
 

@@ -3,7 +3,7 @@
 ROOT = ../../../..
 
 # Harness file you wish to build
-HARNESS = packetbuf_copyfrom_harness.c
+HARNESS = packetbuf_copyfrom_
 
 # Defines file to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)

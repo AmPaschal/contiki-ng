@@ -8,7 +8,7 @@ ROOT = ../../../../../..
 LINK = $(ROOT)/os/net/app-layer/snmp/snmp-ber.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = dlength
+H_ENTRY = test
 
 # Extra CBMC flags to be passed during CBMC analysis
 H_CBMCFLAGS = --nondet-static
@@ -17,7 +17,7 @@ H_CBMCFLAGS = --nondet-static
 H_DEF = 
 
 # Extra CBMC includes to be passed during compilation
-H_INC = -I../..
+H_INC = -I../.. -I$(ROOT)/os/net/app-layer/snmp
 
 # Include our special build file
 include ../../../../Makefile.include

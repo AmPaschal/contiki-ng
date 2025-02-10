@@ -459,15 +459,15 @@ snmp_ber_decode_oid(snmp_packet_t *snmp_packet, snmp_oid_t *oid)
   snmp_packet->used--;
   first = div(*snmp_packet->in++, 40);
 
-  // oid->length = 0;  // This init could also be removed
+  oid->length = 0;  // This init could also be removed
 
   oid->data[oid->length++] = (uint32_t)first.quot;
   oid->data[oid->length++] = (uint32_t)first.rem;
 
   while(snmp_packet->in != buf_end) {
-    // if(oid->length >= SNMP_MSG_OID_MAX_LEN) {  // This line can be removed
-    //   return 0;
-    // }
+    if(oid->length >= SNMP_MSG_OID_MAX_LEN) {  // This line can be removed
+      return 0;
+    }
 
     if(snmp_packet->used == 0) {
       return 0;

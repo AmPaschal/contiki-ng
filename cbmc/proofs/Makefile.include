@@ -1,17 +1,6 @@
 # Number of bits to represent object
 OBJ_BITS ?= 8
 
-NET_DRIVER ?= NETSTACK_CONF_WITH_IPV6
-MAC_DRIVER ?= MAC_CONF_WITH_NULLMAC
-ROUTE_DRIVER ?= ROUTING_CONF_RPL_LITE
-
-C_INC = \
-	-I$(ROOT)/os \
-	-I$(ROOT)/arch/cpu/native \
-	-I$(ROOT)/arch/platform/native \
-	-I$(ROOT)/cbmc/include \
-	# empty
-
 C_DEF = \
 	-DWIN32 \
 	-DWINVER=0x400 \
@@ -24,20 +13,12 @@ C_DEF = \
 	-DCBMC \
 	-D'_static=' \
 	-D'_volatile=' \
-	-D'$(MAC_DRIVER)=1' \
-	-D'$(NET_DRIVER)=1' \
-	-D'$(ROUTE_DRIVER)=1' \
-	# empty
-	#-D'configASSERT(X)=__CPROVER_assert(X,"Assertion Error")' \
-	#-D'configPRECONDITION(X)=__CPROVER_assume(X)' \
-
 
 C_CBMCFLAGS = \
 	--object-bits $(OBJ_BITS) \
 	--32 \
-	--bounds-check \
-	--pointer-check \
-	# empty
+
+IGNORE_OPTIONS = -c|-o|-mfp16-format|-fno-reorder-functions|-fno-printf-return-value|-fno-defer-pop|--specs|--param=min-pagesize|-mthumb|-mabi|-mtp|-mcpu|-mtune|-march 
 
 O_INC = \
 	# empty
@@ -48,6 +29,7 @@ default: report
 # CBMC binaries
 #
 
+CMAKE_COMMAND = cmake
 GOTO_CC = goto-cc
 GOTO_INSTRUMENT = goto-instrument
 GOTO_ANALYZER = goto-analyzer
@@ -82,6 +64,7 @@ CFLAGS = \
 
 CBMCFLAGS = \
   --flush \
+  --verbosity 9 \
   $(CBMCFLAGS2) \
   $(C_CBMCFLAGS) $(O_CBMCFLAGS) $(H_CBMCFLAGS) \
   # empty
@@ -105,15 +88,21 @@ OOS_OBJS = $(patsubst %.c,build/gotos/%.goto,$(C_SOURCES))
 
 CWD=$(abspath .)
 
-# Build all linked sources
-build/gotos/%.goto: %.c
-	$(GOTO_CC) -c -o build/gotos/$(shell basename $@) $(INC) $(CFLAGS) $^
-
-# Build the harness
-$(ENTRY)_harness.goto: $(ENTRY)_harness.c $(H_GENERATE_HEADER)
+generate_headers:
+	mkdir -p build/cbmc
 	mkdir -p build/gotos
 	mkdir -p build/reports
-	$(GOTO_CC) -c -o build/$@ $(INC) $(CFLAGS) $(ENTRY)_harness.c
+.PHONY: generate_headers
+
+
+# Build all linked sources
+build/gotos/%.goto: %.c
+	$(GOTO_CC) -c -o build/gotos/$(shell basename $@) $(INC) $(CFLAGS) $(shell cat build/compile_commands.json | jq '.[] | select(.file | endswith("$(ENTRY)_harness.c")) | .command' |  awk -F' -' '{for(i=2; i<=NF; i++) print "-" $$i}' |  grep -v -E '($(IGNORE_OPTIONS))' | tr '\n' ' ') $^
+
+# Build the harness
+$(ENTRY)_harness.goto: EXTRA_GENERATED_COMPILER_ARGS = $(shell cat build/compile_commands.json | jq '.[] | select(.file | endswith("$(ENTRY)_harness.c")) | .command' |  awk -F' -' '{for(i=2; i<=NF; i++) print "-" $$i}' |  grep -v -E '($(IGNORE_OPTIONS))' | tr '\n' ' ')
+$(ENTRY)_harness.goto: $(ENTRY)_harness.c $(H_GENERATE_HEADER) generate_headers
+	$(GOTO_CC) -c $(EXTRA_GENERATED_COMPILER_ARGS) -o build/$@ $(INC) $(CFLAGS) $(ENTRY)_harness.c
 
 # Link harness and linked sources
 $(ENTRY)1.goto: $(ENTRY)_harness.goto $(OOS_OBJS)
@@ -154,13 +143,22 @@ $(ENTRY).goto: $(ENTRY)5.goto
 # report if the proof failed. If the proof failed, we separately fail
 # the entire job using the check-cbmc-result rule.
 cbmc.xml: $(ENTRY).goto
-	-cbmc $(CBMCFLAGS) $(SOLVER) --unwinding-assertions --trace --xml-ui build/$^ > build/reports/$@ 2>&1
+	-@start=$$(date +%s); \
+	cbmc $(CBMCFLAGS) $(SOLVER) --unwinding-assertions --trace --xml-ui build/$^ > build/reports/$@ 2>&1; \
+	end=$$(date +%s); \
+	echo "CBMC execution time: $$(((end - start) / 60))m $$(((end - start) % 60))s"
 
 property.xml: $(ENTRY).goto
-	cbmc $(CBMCFLAGS) --unwinding-assertions --show-properties --xml-ui build/$^ > build/reports/$@ 2>&1
+	@start=$$(date +%s); \
+	cbmc $(CBMCFLAGS) --unwinding-assertions --show-properties --xml-ui build/$^ > build/reports/$@ 2>&1; \
+	end=$$(date +%s); \
+	echo "Property generation time: $$(((end - start) / 60))m $$(((end - start) % 60))s"
 
 coverage.xml: $(ENTRY).goto
-	cbmc $(CBMCFLAGS) --cover location --xml-ui build/$^ > build/reports/$@ 2>&1
+	@start=$$(date +%s); \
+	cbmc $(CBMCFLAGS) --cover location --xml-ui build/$^ > build/reports/$@ 2>&1; \
+	end=$$(date +%s); \
+	echo "Coverage generation time: $$(((end - start) / 60))m $$(((end - start) % 60))s"
 
 cbmc: cbmc.xml
 
@@ -172,7 +170,7 @@ report: cbmc.xml property.xml coverage.xml
 	$(VIEWER) \
 	--goto build/$(ENTRY).goto \
 	--srcdir $(ROOT) \
-	--reportdir report \
+	--reportdir build/report \
 	--result build/reports/cbmc.xml \
 	--property build/reports/property.xml \
 	--coverage build/reports/coverage.xml

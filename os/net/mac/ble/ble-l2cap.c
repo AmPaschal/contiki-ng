@@ -105,7 +105,7 @@ get_channel_for_addr(const linkaddr_t *peer_addr)
 l2cap_channel_t *
 get_channel_for_cid(uint16_t own_cid)
 {
-  int8_t i = own_cid - L2CAP_FLOW_CHANNEL;
+  int16_t i = own_cid - L2CAP_FLOW_CHANNEL;
   if(i >= 0 && i < l2cap_channel_count) {
     return &l2cap_channels[own_cid - L2CAP_FLOW_CHANNEL];
   } else {
@@ -398,7 +398,7 @@ input_l2cap_credit(uint8_t *data)
   channel->channel_peer.credits += credits;
 }
 /*---------------------------------------------------------------------------*/
-static void
+void
 input_l2cap_frame_signal_channel(uint8_t *data, uint8_t data_len)
 {
   if(data[4] == L2CAP_CODE_CREDIT) {
@@ -412,7 +412,7 @@ input_l2cap_frame_signal_channel(uint8_t *data, uint8_t data_len)
   }
 }
 /*---------------------------------------------------------------------------*/
-static void
+void
 input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t data_len)
 {
   uint16_t frame_len;
@@ -467,7 +467,7 @@ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t
      * must not be cleared */
     memcpy(packetbuf_dataptr(), channel->rx_buffer.sdu, channel->rx_buffer.sdu_length);
     packetbuf_set_datalen(channel->rx_buffer.sdu_length);
-    NETSTACK_NETWORK.input();
+    // NETSTACK_NETWORK.input();
 
     /* reset counters */
     channel->rx_buffer.sdu_length = 0;
@@ -475,7 +475,7 @@ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t
   }
 }
 /*---------------------------------------------------------------------------*/
-static void
+void
 input(void)
 {
   uint8_t *data = (uint8_t *)packetbuf_dataptr();

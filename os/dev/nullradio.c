@@ -100,7 +100,7 @@ set_object(radio_param_t param, const void *src, size_t size)
   return RADIO_RESULT_NOT_SUPPORTED;
 }
 /*---------------------------------------------------------------------------*/
-const struct radio_driver nullradio_driver =
+struct radio_driver nullradio_driver =
   {
     init,
     prepare,

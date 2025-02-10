@@ -17,14 +17,6 @@
 
 #include "snmp-generic.h"
 
-div_t div (int __numer, int __denom) {
-
-    // Create unconstrained div type:
-
-    div_t dtype;
-
-    return dtype;
-}
 
 void harness() {
 
@@ -34,7 +26,11 @@ void harness() {
 
     // Initialize packet:
 
-    init_packet_in(&pack);
+    int size;
+    pack.in = (uint8_t *) malloc(sizeof(uint8_t) * size);
+
+    __CPROVER_assume(pack.in != NULL);
+    pack.used = size;
 
     // Create OID struct
 

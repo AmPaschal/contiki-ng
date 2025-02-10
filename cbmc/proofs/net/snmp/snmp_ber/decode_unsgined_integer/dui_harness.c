@@ -25,7 +25,7 @@ void harness() {
     pack.in = (uint8_t *) malloc(sizeof(uint8_t) * size);
 
     __CPROVER_assume(pack.in != NULL);
-    __CPROVER_assume(pack.used == size);
+    pack.used = size;
 
     // Define an unconstrained type and output:
 

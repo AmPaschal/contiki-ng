@@ -19,121 +19,41 @@
 extern uint8_t *packetbuf_ptr;
 extern uint8_t packetbuf_hdr_len;
 extern int packetbuf_payload_len;
+static uint16_t buflen;
+
+uint16_t
+packetbuf_datalen(void)
+{
+  return buflen;
+}
 
 void harness() {
+
+    uint8_t pbuf_size, hdr_len;
+
+    __CPROVER_assume(pbuf_size > 0);
 
     // Ensure packetbuf is valid:
+    packetbuf_ptr = (uint8_t *) malloc(pbuf_size);
+    __CPROVER_assume(packetbuf_ptr != NULL);
 
-    // uint16_t datalen = init_packetbuf();
+    __CPROVER_assume(hdr_len < 100); // If this value is large, it causes an overflow when used for an arithmetic operation
 
-    // Define out buffer size:
+    packetbuf_hdr_len = hdr_len;
+
+    buflen = pbuf_size;
+
 
     const uint16_t outb_size;
-
-    // The in buffer must be <= out buffer:
-
-    // __CPROVER_assume(datalen <= outb_size);
-    __CPROVER_assume(outb_size <= 100);
-    // __CPROVER_assume(outb_size >= sizeof(struct uip_ip_hdr));
-
-    // Create out buffer:
-    // (Buffer won't be NULL)
+    __CPROVER_assume(outb_size >= sizeof(struct uip_ip_hdr));
 
     uint8_t* outb = (uint8_t*)malloc(sizeof(uint8_t) * outb_size);
 
     __CPROVER_assume(outb != NULL);
 
-    // Set data pointer:
-
-    // packetbuf_ptr = packetbuf_hdrptr();
-
-    // Pointer won't be null:
-
-    // __CPROVER_assume(packetbuf_ptr != NULL);
-
-    // Pointer will be valid:
-
-    // __CPROVER_assume(__CPROVER_rw_ok(packetbuf_ptr, datalen));
-
-    // Define header and data size:
-
-    // __CPROVER_assume(packetbuf_payload_len >= 0);
-    // __CPROVER_assume((packetbuf_hdr_len) + packetbuf_payload_len < datalen);
-
-    // Define IP length:
 
     uint16_t ip_legnth;
     
-    // Init 6LowPAN
-
-    // sicslowpan_init();
 
     bool res = uncompress_hdr_iphc(outb, outb_size, ip_legnth);
 }
-
-
-/**
-
-#include "contiki.h"
-#include "net/packetbuf.h" 
-#include "net/ipv6/sicslowpan.h"
-#include "net/ipv6/uip.h"
-
-// #include "gnet/packetbuf-generic.h"
-
-extern uint8_t *packetbuf_ptr;
-extern uint8_t packetbuf_hdr_len;
-extern int packetbuf_payload_len;
-
-void harness() {
-
-    // Ensure packetbuf is valid: t
-
-    uint16_t datalen = init_packetbuf();
-
-    // Define out buffer size:
-
-    uint16_t outb_size;
-
-    // The in buffer must be <= out buffer:
-
-    // __CPROVER_assume(datalen <= outb_size);
-    __CPROVER_assume(outb_size <= 100);
-    // __CPROVER_assume(outb_size >= sizeof(struct uip_ip_hdr));
-
-    // Create out buffer:
-    // (Buffer won't be NULL)
-
-    uint8_t* outb = (uint8_t*)malloc(sizeof(uint8_t) * outb_size);
-
-    __CPROVER_assume(outb != NULL);
-
-    // Set data pointer:
-
-    // packetbuf_ptr = packetbuf_hdrptr();
-
-    // Pointer won't be null:
-
-    // __CPROVER_assume(packetbuf_ptr != NULL);
-
-    // Pointer will be valid:
-
-    // __CPROVER_assume(__CPROVER_rw_ok(packetbuf_ptr, datalen));
-
-    // Define header and data size:
-
-    // __CPROVER_assume(packetbuf_payload_len >= 0);
-    // __CPROVER_assume((packetbuf_hdr_len) + packetbuf_payload_len < datalen);
-
-    // Define IP length:
-
-    uint16_t ip_legnth;
-    
-    // Init 6LowPAN
-
-    // sicslowpan_init();
-
-    bool res = uncompress_hdr_iphc(outb, outb_size, ip_legnth);
-}
-
- */

@@ -21,28 +21,18 @@ void harness() {
 
     snmp_packet_t pack;
 
-    // Initialize:
-
-    // init_packet_in(&pack);
+    // Initialize
 
     int size;
-    __CPROVER_assume(size > 0 && size < 100);
+    __CPROVER_assume(size > 0);
     pack.in = malloc(size);
-    // __CPROVER_assume(pack.in != NULL);
+    __CPROVER_assume(pack.in != NULL);
     pack.used = size;
-
-    // Create header:
 
     snmp_header_t header;
 
-    // Determine varbind array size:
-    // (TODO: Make unconstrained to test large varbind sizes?)
-
-    // const uint32_t vsize = SNMP_MAX_NR_VALUES;
-
-    // Create varbind array:
-
-    snmp_varbind_t varbinds[2];
+    snmp_varbind_t *varbinds = malloc(SNMP_MAX_NR_VALUES * sizeof(snmp_varbind_t));
+    __CPROVER_assume(varbinds != NULL);
 
     // Pass values to function:
 

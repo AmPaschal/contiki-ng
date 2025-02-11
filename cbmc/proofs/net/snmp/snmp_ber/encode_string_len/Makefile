@@ -19,5 +19,16 @@ H_DEF =
 # Extra CBMC includes to be passed during compilation
 H_INC = -I../..
 
+NET_DRIVER ?= NETSTACK_CONF_WITH_IPV6
+MAC_DRIVER ?= MAC_CONF_WITH_NULLMAC
+ROUTE_DRIVER ?= ROUTING_CONF_RPL_LITE
+
+C_INC = \
+	-I$(ROOT)/os \
+	-I$(ROOT)/arch/cpu/native \
+	-I$(ROOT)/arch/platform/native \
+	-I$(ROOT)/cbmc/include \
+
 # Include our special build file
-include ../../../../Makefile.include
+MAKE_INCLUDE_PATH ?= ../../../..
+include $(MAKE_INCLUDE_PATH)/Makefile.include

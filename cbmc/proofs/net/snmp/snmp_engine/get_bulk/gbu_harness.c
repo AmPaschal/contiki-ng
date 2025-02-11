@@ -12,6 +12,23 @@
 #include "contiki.h"
 #include "net/app-layer/snmp/snmp.h"
 #include "net/app-layer/snmp/snmp-engine.h"
+#include "net/app-layer/snmp/snmp-mib.h"
+
+void *resource_handler(snmp_varbind_t *varbind, snmp_oid_t *oid) {
+
+    uint8_t size;
+    void *pointer = malloc(size);
+    return pointer;
+
+}
+
+snmp_mib_resource_t *snmp_mib_find_next(snmp_oid_t *oid) {
+    snmp_mib_resource_t *resource = malloc(sizeof(snmp_mib_resource_t));
+    __CPROVER_assume(resource != NULL);
+    resource->handler = resource_handler;
+    uint8_t b;
+    return b ? NULL : resource;
+}
 
 void harness() {
 
@@ -21,9 +38,8 @@ void harness() {
 
     // Create varbind array:
 
-    int varbinds_length = 4;
-
-    snmp_varbind_t varbinds[varbinds_length];
+    snmp_varbind_t *varbinds = malloc(SNMP_MAX_NR_VALUES * sizeof(snmp_varbind_t));
+    __CPROVER_assume(varbinds != NULL);
 
     // Send along to function:
 

@@ -1346,6 +1346,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
     uint8_t checksum_compressed;
 
     /* Check that there is enough room to write the UDP header. */
+    // Comment out to recreate CVE-2022-36052
     if((ip_payload - buf) + UIP_UDPH_LEN > buf_size) {
       LOG_WARN("uncompression: cannot write UDP header beyond target buffer\n");
       return false;

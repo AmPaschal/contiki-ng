@@ -204,11 +204,11 @@ ns_input(void)
 #endif /* UIP_CONF_IPV6_CHECKS */
     switch (ND6_OPT_HDR_BUF(nd6_opt_offset)->type) {
     case UIP_ND6_OPT_SLLAO:
-      // if(uip_l3_icmp_hdr_len + nd6_opt_offset +
-      //    UIP_ND6_OPT_DATA_OFFSET + UIP_LLADDR_LEN > uip_len) {
-      //   LOG_ERR("Insufficient data for NS SLLAO option\n");
-      //   goto discard;
-      // }
+      if(uip_l3_icmp_hdr_len + nd6_opt_offset +
+         UIP_ND6_OPT_DATA_OFFSET + UIP_LLADDR_LEN > uip_len) {
+        LOG_ERR("Insufficient data for NS SLLAO option\n");
+        goto discard;
+      }
       nd6_opt_llao = &uip_buf[uip_l3_icmp_hdr_len + nd6_opt_offset];
 #if UIP_CONF_IPV6_CHECKS
       /* There must be NO option in a DAD NS */

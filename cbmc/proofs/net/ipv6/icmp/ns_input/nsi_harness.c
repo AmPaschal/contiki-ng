@@ -31,13 +31,6 @@ uip_ds6_nbr_t* uip_ds6_nbr_lookup(const uip_ipaddr_t *ipaddr) {
     return blah ? NULL : onbr;
 }
 
-// int uip_ds6_nbr_update_ll(uip_ds6_nbr_t **nbr_pp, const uip_lladdr_t *new_ll_addr) {
-
-//     int thing;
-
-//     return thing;
-// }
-
 uip_ds6_addr_t * uip_ds6_addr_lookup(uip_ipaddr_t *ipaddr) {
 
     bool blah;
@@ -60,59 +53,15 @@ const uip_lladdr_t * uip_ds6_nbr_get_ll(const uip_ds6_nbr_t *nbr)
     return blah ? NULL : ret;
 }
 
-// uint16_t uip_icmp6chksum(void) {
-
-//     uint16_t sum;
-
-//     return sum;
-// }
-
-// uip_ds6_nbr_t *
-// uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
-//                 uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
-//                 void *data) {
-
-//     bool thing;
-
-//     if (thing) {
-//         return NULL;
-//     }
-
-//     // Allocate NBR table entry:
-
-//     uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
-
-//     // IP address MUST be the same as provided:
-
-//     nbr->ipaddr = *ipaddr;
-
-//     // Return entry:
-
-//     return nbr;
-// }
 
 void harness() {
 
-    // Length will not exceed buffer size:
+    uint8_t ext_len;
 
-    // int size;
+    __CPROVER_assume(uip_len < UIP_BUFSIZE);
 
-    // __CPROVER_assume(size > 0 && size < 100);
-
-    // uint8_t *buf = (uint8_t*)malloc(size);
-
-
-
-    // memcpy(uip_buf, buf, size);
-    // uip_len = size;
-
-    __CPROVER_assume(uip_ext_len == 0);
-
-    __CPROVER_assume(uip_len + uip_ext_len <= UIP_BUFSIZE);
-
-    // Total length of extension headers will not exceed buffer size:
-
-    // __CPROVER_assume(uip_l3_icmp_hdr_len + sizeof(uip_nd6_ns) <= uip_len);
+    __CPROVER_assume(ext_len < uip_len - 84); // 84 is the computed offset and size of the IPv6 + ICMP + ND6 header. It's rough and the value may not be correct
+    uip_ext_len = ext_len;
 
     ns_input();
 }

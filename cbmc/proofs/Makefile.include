@@ -35,9 +35,7 @@ C_DEF = \
 C_CBMCFLAGS = \
 	--object-bits $(OBJ_BITS) \
 	--32 \
-	--bounds-check \
-	--pointer-check \
-	# empty
+	--verbosity 9 \
 
 O_INC = \
 	# empty

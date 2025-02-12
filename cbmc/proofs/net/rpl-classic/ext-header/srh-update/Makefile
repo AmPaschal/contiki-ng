@@ -15,10 +15,25 @@ H_ENTRY = srhu
 H_CBMCFLAGS = --unwind 1 --nondet-static #--signed-overflow-check --unsigned-overflow-check --unwindset uipbuf_search_header.0:10
 
 # Extra header defintiions to be passed during compilation
-H_DEF = -D'RPL_CONF_WITH_NON_STORING=1' -D'UIP_CONF_BUFFER_SIZE=50'
+H_DEF = -D'RPL_CONF_WITH_NON_STORING=1' -D'UIP_CONF_BUFFER_SIZE=50' \
+	-D'$(MAC_DRIVER)=1' \
+	-D'$(NET_DRIVER)=1' \
+	-D'$(ROUTE_DRIVER)=1' \
+
+
+NET_DRIVER ?= NETSTACK_CONF_WITH_IPV6
+MAC_DRIVER ?= MAC_CONF_WITH_NULLMAC
+ROUTE_DRIVER ?= ROUTING_CONF_RPL_LITE
+
+C_INC = \
+	-I$(ROOT)/os \
+	-I$(ROOT)/arch/cpu/native \
+	-I$(ROOT)/arch/platform/native \
+	-I$(ROOT)/cbmc/include \
 
 # Extra CBMC includes to be passed during compilation
 H_INC = 
 
 # Include our special build file
-include ../../../../Makefile.include
+MAKE_INCLUDE_PATH ?= ../../../..
+include $(MAKE_INCLUDE_PATH)/Makefile.include

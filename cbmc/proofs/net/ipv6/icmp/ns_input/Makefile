@@ -13,7 +13,7 @@ LINK = $(ROOT)/os/net/ipv6/uip-nd6.c # $(ROOT)/os/net/ipv6/uipbuf.c #$(ROOT)/os/
 H_ENTRY = nsi
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset ns_input.12:2 #--havoc-undefined-functions #--unwindset ns_input.12:50 #--signed-overflow-check --unsigned-overflow-check
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset ns_input.11:2 #--havoc-undefined-functions #--unwindset ns_input.12:50 #--signed-overflow-check --unsigned-overflow-check
 
 # Extra header defintiions to be passed during compilation
 H_DEF = #-D"UIP_CONF_ND6_SEND_NA=1" 

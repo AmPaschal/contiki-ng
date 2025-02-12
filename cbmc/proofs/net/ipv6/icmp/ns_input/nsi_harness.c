@@ -60,7 +60,7 @@ void harness() {
 
     __CPROVER_assume(uip_len < UIP_BUFSIZE);
 
-    __CPROVER_assume(ext_len < uip_len - 84); // 84 is the computed offset and size of the IPv6 + ICMP + ND6 header. It's rough and the value may not be correct
+    // __CPROVER_assume(ext_len < uip_len - 84); // 84 is the computed offset and size of the IPv6 + ICMP + ND6 header. It's rough and the value may not be correct
     uip_ext_len = ext_len;
 
     ns_input();

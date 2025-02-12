@@ -22,10 +22,6 @@
  uint8_t *
  uipbuf_search_header(uint8_t *buffer, uint16_t size, uint8_t protocol) {
  
-     // uint16_t retsize;
-     // __CPROVER_assume(retsize > sizeof(struct uip_routing_hdr) + sizeof(struct uip_rpl_srh_hdr));
-     // uint8_t *ret = malloc(retsize);
-     // __CPROVER_assume(ret != NULL);
      uint16_t offset;
      __CPROVER_assume(offset + sizeof(struct uip_routing_hdr) + sizeof(struct uip_rpl_srh_hdr) < uip_len - 40);
      return uip_aligned_buf.u8 + 40 + offset;

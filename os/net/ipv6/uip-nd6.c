@@ -195,6 +195,7 @@ ns_input(void)
   /* Options processing */
   nd6_opt_llao = NULL;
   nd6_opt_offset = UIP_ND6_NS_LEN;
+  // while(uip_l3_icmp_hdr_len + nd6_opt_offset < uip_len) { // Uncomment to recreate vuln
   while(uip_l3_icmp_hdr_len + nd6_opt_offset + UIP_ND6_OPT_HDR_LEN < uip_len) {
 #if UIP_CONF_IPV6_CHECKS
     if(ND6_OPT_HDR_BUF(nd6_opt_offset)->len == 0) {

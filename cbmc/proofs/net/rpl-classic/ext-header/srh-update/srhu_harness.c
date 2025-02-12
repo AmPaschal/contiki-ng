@@ -18,13 +18,25 @@
 extern uint16_t uip_len;
 extern uip_buf_t uip_aligned_buf;
 
+uint8_t *
+uipbuf_search_header(uint8_t *buffer, uint16_t size, uint8_t protocol) {
+
+    // uint16_t retsize;
+    // __CPROVER_assume(retsize > sizeof(struct uip_routing_hdr) + sizeof(struct uip_rpl_srh_hdr));
+    // uint8_t *ret = malloc(retsize);
+    // __CPROVER_assume(ret != NULL);
+    uint16_t offset;
+    __CPROVER_assume(offset + sizeof(struct uip_routing_hdr) + sizeof(struct uip_rpl_srh_hdr) < uip_len - 40);
+    return uip_aligned_buf.u8 + 40 + offset;
+}
+
 void harness() {
 
     // Ensure uip_len does not exceed UIP_BUFFSIZE:
     // TODO: Uncomment if testing found vulnerability!
 
     // Will NEVER occur due to header length being verified
-    __CPROVER_assume(uip_len <= UIP_BUFSIZE);
+    __CPROVER_assume(uip_len > 40 && uip_len <= UIP_BUFSIZE);
 
     rpl_ext_header_srh_update();
 }

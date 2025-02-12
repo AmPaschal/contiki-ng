@@ -5,7 +5,7 @@ ROOT = ../../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-ext-header.c $(ROOT)/os/net/ipv6/uipbuf.c
+LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-ext-header.c # $(ROOT)/os/net/ipv6/uipbuf.c
 #$(ROOT)/os/net/ipv6/uipbuf.c $(ROOT)/os/net/routing/rpl-classic/rpl.c
 
 # Harness to utilize, omit the extension!

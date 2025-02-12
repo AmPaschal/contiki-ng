@@ -244,12 +244,12 @@ rpl_ext_header_srh_update(void)
     if(segments_left == 0) {
       /* We are the final destination, do nothing. */
     } 
-    // else if(segments_left > path_len) {
-    //   /* Discard the packet because of a parameter problem. */
-    //   LOG_ERR("SRH with too many segments left (%u > %u)\n",
-    //           segments_left, path_len);
-    //   return 0;
-    // } 
+    else if(segments_left > path_len) {
+      /* Discard the packet because of a parameter problem. */
+      LOG_ERR("SRH with too many segments left (%u > %u)\n",
+              segments_left, path_len);
+      return 0;
+    } 
     else {
       /* The index of the next address to be visited. */
       uint8_t i = path_len - segments_left;
@@ -257,10 +257,10 @@ rpl_ext_header_srh_update(void)
       ptrdiff_t rh_offset = (uint8_t *)rh_header - uip_buf;
       size_t addr_offset = RPL_RH_LEN + RPL_SRH_LEN + (i * (16 - cmpri));
 
-      // if(rh_offset + addr_offset + 16 - cmpr > UIP_BUFSIZE) {
-      //   LOG_ERR("Invalid SRH address pointer\n");
-      //   return 0;
-      // }
+      if(rh_offset + addr_offset + 16 - cmpr > UIP_BUFSIZE) {
+        LOG_ERR("Invalid SRH address pointer\n");
+        return 0;
+      }
 
       uint8_t *addr_ptr = ((uint8_t *)rh_header) + addr_offset;
 

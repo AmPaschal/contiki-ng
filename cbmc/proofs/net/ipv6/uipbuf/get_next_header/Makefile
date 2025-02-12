@@ -36,4 +36,5 @@ C_INC = \
 	# empty
 
 # Include our special build file
-include ../../../../Makefile.include
+MAKE_INCLUDE_PATH ?= ../../../..
+include $(MAKE_INCLUDE_PATH)/Makefile.include

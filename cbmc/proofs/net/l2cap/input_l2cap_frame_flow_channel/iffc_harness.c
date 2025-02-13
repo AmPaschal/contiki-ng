@@ -15,17 +15,36 @@
 #include "gnet/packetbuf-generic.h"
 #include "l2cap-struct.h"
 
+static uint16_t bufsize;
+
+uint16_t
+packetbuf_remaininglen(void) {
+
+    return bufsize;
+
+}
+
+void *packetbuf_dataptr(void)
+{
+    uint8_t *data = malloc(bufsize);
+    __CPROVER_assume(data != NULL);
+    return data;
+}
+
 void harness() {
 
     // Create packetbuf:
 
-    uint16_t len = init_packetbuf();
+    l2cap_channel_t channel;
+
+    uint16_t len;
+
+    __CPROVER_assume(channel.rx_buffer.sdu_length != 0 || len > 6);
 
     // Define channel data:
 
-    l2cap_channel_t channel;
-
-    uint8_t *data = (uint8_t *)packetbuf_dataptr();
+    uint8_t *data = malloc(len);
+    __CPROVER_assume(data != NULL);
 
     input_l2cap_frame_flow_channel(&channel, data, len);
 }

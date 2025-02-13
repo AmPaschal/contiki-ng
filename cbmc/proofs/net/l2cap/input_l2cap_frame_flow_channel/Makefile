@@ -5,7 +5,7 @@ ROOT = ../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/mac/ble/ble-l2cap.c $(ROOT)/os/net/packetbuf.c
+LINK = $(ROOT)/os/net/mac/ble/ble-l2cap.c # $(ROOT)/os/net/packetbuf.c
 
 # Need more object bits for large harness
 OBJ_BITS = 9
@@ -17,7 +17,7 @@ H_ENTRY = iffc
 H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Extra header defintiions to be passed during compilation
-H_DEF =
+H_DEF = -DPACKETBUF_CONF_SIZE=512
 
 # Extra CBMC includes to be passed during compilation
 H_INC = -I..

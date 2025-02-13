@@ -20,6 +20,15 @@
 extern uint16_t uip_len;
 extern uint16_t uip_ext_len;  // Define header extension length
 
+const uip_ipaddr_t *
+uip_ds6_route_nexthop(uip_ds6_route_t *route) {
+    uip_ipaddr_t *addr = malloc(sizeof(uip_ipaddr_t));
+
+    __CPROVER_assume(addr != NULL);
+
+    return addr;
+}
+
 rpl_instance_t *
 rpl_get_instance(uint8_t instance_id) {
 
@@ -57,6 +66,8 @@ rpl_get_instance(uint8_t instance_id) {
 
     inst->current_dag = dag;
     dag->instance = inst;
+
+    __CPROVER_assume(inst->min_hoprankinc != 0);
 
     return inst;
 }

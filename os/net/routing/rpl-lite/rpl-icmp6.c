@@ -65,7 +65,7 @@
 
 /*---------------------------------------------------------------------------*/
 static void dis_input(void);
-static void dio_input(void);
+void dio_input(void);
 static void dao_input(void);
 
 /*---------------------------------------------------------------------------*/
@@ -169,7 +169,7 @@ rpl_icmp6_dis_output(uip_ipaddr_t *addr)
   uip_icmp6_send(addr, ICMP6_RPL, RPL_CODE_DIS, 2);
 }
 /*---------------------------------------------------------------------------*/
-static void
+void
 dio_input(void)
 {
   unsigned char *buffer;

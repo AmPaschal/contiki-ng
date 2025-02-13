@@ -5,7 +5,7 @@ ROOT = ../../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-icmp6.c $(ROOT)/os/net/routing/rpl-classic/rpl-dag.c #$(ROOT)/os/net/ipv6/uipbuf.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip6.c
+LINK = $(ROOT)/os/net/routing/rpl-classic/rpl-icmp6.c # $(ROOT)/os/net/routing/rpl-classic/rpl-dag.c #$(ROOT)/os/net/ipv6/uipbuf.c $(ROOT)/os/net/packetbuf.c $(ROOT)/os/net/ipv6/uip6.c
 
 # Required due to proof complexity
 OBJ_BITS = 9

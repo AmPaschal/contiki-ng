@@ -17,10 +17,27 @@ H_ENTRY = dio
 H_CBMCFLAGS = --nondet-static --unwind 1 #--unwindset dio_input.22:5
 
 # Extra header defintiions to be passed during compilation
-# H_DEF = -D'UIP_CONF_BUFFER_SIZE=500'
+H_DEF = \
+	-D'$(MAC_DRIVER)=1' \
+	-D'$(NET_DRIVER)=1' \
+	-D'$(ROUTE_DRIVER)=1' \
 
 # Extra CBMC includes to be passed during compilation
 H_INC = 
 
+
+
+NET_DRIVER ?= NETSTACK_CONF_WITH_IPV6
+MAC_DRIVER ?= MAC_CONF_WITH_NULLMAC
+ROUTE_DRIVER ?= ROUTING_CONF_RPL_LITE
+
+C_INC = \
+	-I$(ROOT)/os \
+	-I$(ROOT)/arch/cpu/native \
+	-I$(ROOT)/arch/platform/native \
+	-I$(ROOT)/cbmc/include \
+	# empty
+
 # Include our special build file
-include ../../../../Makefile.include
+MAKE_INCLUDE_PATH ?= ../../../..
+include $(MAKE_INCLUDE_PATH)/Makefile.include

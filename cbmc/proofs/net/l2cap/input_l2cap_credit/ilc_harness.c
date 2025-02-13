@@ -18,9 +18,13 @@ void harness() {
 
     // Create packetbuf:
 
-    uint16_t len = init_packetbuf();
+    uint16_t len;
 
-    uint8_t *data = (uint8_t *)packetbuf_dataptr();
+    __CPROVER_assume(len >= 7);
+
+    uint8_t *data = malloc(len);
+
+    __CPROVER_assume(data != NULL);
 
     input_l2cap_credit(data);
 }

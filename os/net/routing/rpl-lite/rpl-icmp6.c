@@ -196,11 +196,11 @@ dio_input(void)
 
   buffer_length = uip_len - uip_l3_icmp_hdr_len;
 
-  if(buffer_length < 8 + sizeof(dio.dag_id)) {
-    LOG_WARN("dio_input: invalid DIO header, len %"PRIu16", discard\n",
-             buffer_length);
-    goto discard;
-  }
+  // if(buffer_length < 8 + sizeof(dio.dag_id)) {
+  //   LOG_WARN("dio_input: invalid DIO header, len %"PRIu16", discard\n",
+  //            buffer_length);
+  //   goto discard;
+  // }
 
   /* Process the DIO base option. */
   i = 0;

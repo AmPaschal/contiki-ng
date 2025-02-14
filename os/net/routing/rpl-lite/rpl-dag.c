@@ -54,7 +54,7 @@
 
 /*---------------------------------------------------------------------------*/
 extern rpl_of_t rpl_of0, rpl_mrhof;
-static rpl_of_t * const objective_functions[] = RPL_SUPPORTED_OFS;
+rpl_of_t * const objective_functions[] = RPL_SUPPORTED_OFS;
 static int process_dio_init_dag(rpl_dio_t *dio);
 
 /*---------------------------------------------------------------------------*/

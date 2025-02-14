@@ -632,7 +632,8 @@ rs_input(void)
   nd6_opt_offset = UIP_ND6_RS_LEN;
   nd6_opt_llao = NULL;
 
-  while(uip_l3_icmp_hdr_len + nd6_opt_offset < uip_len) {
+  while(uip_l3_icmp_hdr_len + nd6_opt_offset + sizeof(uip_nd6_opt_hdr) < uip_len) { // Potential Vuln: Fix for potential new vulnerability
+  // while(uip_l3_icmp_hdr_len + nd6_opt_offset < uip_len) {
 #if UIP_CONF_IPV6_CHECKS
     if(ND6_OPT_HDR_BUF(nd6_opt_offset)->len == 0) {
       LOG_ERR("RS received is bad\n");
@@ -658,6 +659,11 @@ rs_input(void)
     } else {
 #endif /*UIP_CONF_IPV6_CHECKS */
       uip_lladdr_t lladdr_aligned;
+      // Potential Vuln: Adding this validation to prevent an OOB read in extract_lladdr_from_llao_aligned
+      if (nd6_opt_llao + UIP_ND6_OPT_DATA_OFFSET + UIP_LLADDR_LEN > uip_buf + uip_len) {
+        LOG_ERR("RS received is bad\n");
+        goto discard;
+      }
       extract_lladdr_from_llao_aligned(&lladdr_aligned);
       if((nbr = uip_ds6_nbr_lookup(&UIP_IP_BUF->srcipaddr)) == NULL) {
         /* we need to add the neighbor */

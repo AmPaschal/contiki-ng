@@ -11,7 +11,7 @@ LINK = $(ROOT)/os/net/ipv6/tcpip.c
 H_ENTRY = cts
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static 
 
 # Extra header defintiions to be passed during compilation
 H_DEF = -D'UIP_CONF_TCP=1'

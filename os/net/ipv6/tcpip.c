@@ -145,7 +145,7 @@ start_periodic_tcp_timer(void)
 }
 #endif /* UIP_TCP */
 /*---------------------------------------------------------------------------*/
-static void
+void
 check_for_tcp_syn(void)
 {
 #if UIP_TCP

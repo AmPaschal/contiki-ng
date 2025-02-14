@@ -626,10 +626,10 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
     memset(&ipaddr->u8[prefcount], 0, 16 - (prefcount + postcount));
   }
   if(postcount > 0) {
-    if((iphc_ptr - packetbuf_ptr) + postcount > packetbuf_datalen()) {
-      LOG_WARN("Insufficient packet data to decompress IP address\n");
-      return false;
-    }
+    // if((iphc_ptr - packetbuf_ptr) + postcount > packetbuf_datalen()) {
+    //   LOG_WARN("Insufficient packet data to decompress IP address\n");
+    //   return false;
+    // }
 
     memcpy(&ipaddr->u8[16 - postcount], iphc_ptr, postcount);
     if(postcount == 2 && prefcount < 11) {

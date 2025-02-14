@@ -67,7 +67,7 @@ void harness() {
 
     uint16_t iphc_offset;
     // __CPROVER_assume(iphc_offset < 1000);
-    __CPROVER_assume(iphc_offset + post < len && iphc_offset + post >= iphc_offset);
+    __CPROVER_assume(iphc_offset < len);
     iphc_ptr = packetbuf_ptr + iphc_offset;
 
 

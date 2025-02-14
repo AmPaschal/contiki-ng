@@ -6,13 +6,13 @@ ROOT = ../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/ipv6/sicslowpan.c $(ROOT)/os/net/ipv6/uip-ds6.c
+LINK = $(ROOT)/os/net/ipv6/sicslowpan.c # $(ROOT)/os/net/ipv6/uip-ds6.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = ua
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static
 
 # Extra header defintiions to be passed during compilation
 H_DEF = 

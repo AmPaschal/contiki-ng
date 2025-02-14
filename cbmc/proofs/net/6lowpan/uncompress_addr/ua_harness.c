@@ -59,14 +59,11 @@ void harness() {
 
     uint16_t len;
 
-    // __CPROVER_assume(len < 1000);
-
     packetbuf_ptr = malloc(len);
     __CPROVER_assume(packetbuf_ptr != NULL);
     buflen = len;
 
     uint16_t iphc_offset;
-    // __CPROVER_assume(iphc_offset < 1000);
     __CPROVER_assume(iphc_offset < len);
     iphc_ptr = packetbuf_ptr + iphc_offset;
 

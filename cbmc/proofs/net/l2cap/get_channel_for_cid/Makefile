@@ -5,7 +5,7 @@ ROOT = ../../../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/os/net/mac/ble/ble-l2cap.c #$(ROOT)/os/net/packetbuf.c # $(ROOT)/os/net/linkaddr.c
+LINK = $(ROOT)/os/net/mac/ble/ble-l2cap.c $(ROOT)/os/net/packetbuf.c # $(ROOT)/os/net/linkaddr.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = gcc

@@ -57,20 +57,20 @@ input_l2cap_frame_flow_channel(l2cap_channel_t *channel, uint8_t *data, uint16_t
 
 }
 
-static uint8_t datalen;
+// static uint8_t datalen;
 
-void *
-packetbuf_dataptr(void)
-{
-    __CPROVER_assume(datalen > 4);
-  uint8_t *data = malloc(datalen);
-  __CPROVER_assume(data != NULL);
-  return data;
-}
+// void *
+// packetbuf_dataptr(void)
+// {
+//     __CPROVER_assume(datalen > 4);
+//   uint8_t *data = malloc(datalen);
+//   __CPROVER_assume(data != NULL);
+//   return data;
+// }
 
-uint16_t packetbuf_datalen(void) {
-    return datalen;
-}
+// uint16_t packetbuf_datalen(void) {
+//     return datalen;
+// }
 
 void harness() {
     __CPROVER_assume(l2cap_channel_count <= L2CAP_CHANNELS);

@@ -459,7 +459,7 @@ typedef union {
   uint8_t u8[UIP_BUFSIZE];
 } uip_buf_t;
 
-extern uip_buf_t uip_aligned_buf;
+uip_buf_t uip_aligned_buf;
 
 /** Macro to access uip_aligned_buf as an array of bytes */
 #define uip_buf (uip_aligned_buf.u8)

@@ -17,6 +17,9 @@ C_DEF = \
 C_CBMCFLAGS = \
 	--object-bits $(OBJ_BITS) \
 	--32 \
+	--verbosity 9 \
+	--bounds-check \
+	--pointer-check \
 
 IGNORE_OPTIONS = -c|-o|-mfp16-format|-fno-reorder-functions|-fno-printf-return-value|-fno-defer-pop|--specs|--param=min-pagesize|-mthumb|-mabi|-mtp|-mcpu|-mtune|-march 
 

@@ -15,7 +15,7 @@
 #include "net/app-layer/snmp/snmp.h"
 #include "net/app-layer/snmp/snmp-ber.h"
 
-#include "snmp-generic.h"
+// #include "snmp-generic.h"
 
 
 void harness() {

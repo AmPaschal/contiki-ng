@@ -22,13 +22,21 @@ void harness() {
 
     // Initialize:
 
-    init_packet_out(&pack);
+    uint16_t size;
+
+    __CPROVER_assume(size > 0);
+
+    pack.out = (uint8_t *) malloc(sizeof(uint8_t) * size);
+    __CPROVER_assume(pack.out != NULL);
+    pack.out += (size - 1);
+    pack.max = size;
+    pack.used = 0;
 
     // Define length, limit by max size:
 
-    uint32_t length;
+    uint16_t length;
 
-    __CPROVER_assume(length < 100);
+    __CPROVER_assume(length > 0);
 
     // Allocate string (won't be null):
 

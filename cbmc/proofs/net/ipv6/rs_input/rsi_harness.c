@@ -22,57 +22,40 @@ uint16_t uip_len;
 uip_ds6_nbr_t *
 uip_ds6_nbr_lookup(const uip_ipaddr_t *ipaddr) {
 
-    bool thing;
-
-    if (thing) {
-        return NULL;
-    }
-
-    // Allocate an NBR type:
-    // (May be NULL)
 
     uip_ds6_nbr_t* nbrt = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
 
+    bool match;
+
     // IP address will match:
 
-    nbrt->ipaddr = *ipaddr;
-
-    return nbrt;
-}
-
-int
-uip_ds6_nbr_rm(uip_ds6_nbr_t *nbr) {
-
-    // Determine if we are NULL:
-
-    if (nbr != NULL) {
-
-        // Assume success:
-
-        return 1;
+    if (nbrt != NULL && match) {
+        nbrt->ipaddr = *ipaddr;
     }
 
-    return 0;
+    
+
+    return nbrt;
 }
 
 uip_ds6_nbr_t *
 uip_ds6_nbr_add(const uip_ipaddr_t *ipaddr, const uip_lladdr_t *lladdr,
                 uint8_t isrouter, uint8_t state, nbr_table_reason_t reason,
                 void *data) {
-
-    bool thing;
-
-    if (thing) {
-        return NULL;
-    }
-
     // Allocate NBR table entry:
 
     uip_ds6_nbr_t *nbr = (uip_ds6_nbr_t*)malloc(sizeof(uip_ds6_nbr_t));
 
     // IP address MUST be the same as provided:
 
-    nbr->ipaddr = *ipaddr;
+    bool match;
+
+    // IP address will match:
+
+    if (nbr != NULL && match) {
+        nbr->ipaddr = *ipaddr;
+    }
+
 
     // Return entry:
 
@@ -97,7 +80,10 @@ void harness() {
 
     // Header length will not exceed size:
 
-    __CPROVER_assume(uip_ext_len <= uip_len - UIP_IPH_LEN);
+    uint8_t space = UIP_IPH_LEN + sizeof(struct uip_icmp_hdr) + sizeof(uip_nd6_opt_hdr) + UIP_ND6_RS_LEN;
+
+    __CPROVER_assume(uip_ext_len + space > uip_ext_len &&
+                        uip_ext_len + space <= uip_len);
 
     rs_input();
 }

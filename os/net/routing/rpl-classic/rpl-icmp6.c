@@ -672,7 +672,7 @@ dao_input_storing(void)
 
   buffer = UIP_ICMP_PAYLOAD;
   uint16_t buffer_length = uip_len - uip_l3_icmp_hdr_len;
-  if(0) {
+  if(buffer_length < 4) {
     LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
 	     buffer_length, 4);
     return;
@@ -700,7 +700,7 @@ dao_input_storing(void)
 
   /* Is the DAG ID present? */
   if(flags & RPL_DAO_D_FLAG) {
-      if(0) {
+      if(last_valid_pos < pos + 16) {
 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
 		 last_valid_pos, pos + 16);
 	return;
@@ -753,7 +753,7 @@ dao_input_storing(void)
       len = 1;
     } else {
       /* The option consists of a two-byte header and a payload. */
-      if(0) {
+      if(last_valid_pos < i + 1) {
 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
 		 last_valid_pos, i + 1);
 	return;
@@ -764,12 +764,13 @@ dao_input_storing(void)
     switch(subopt_type) {
     case RPL_OPTION_TARGET:
       /* Handle the target option. */
-      if(0) {
+      if(last_valid_pos < i + 3) {
 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
 		 last_valid_pos, i + 3);
 	return;
       }
       prefixlen = buffer[i + 3];
+      // Comment out the next three validations to expose CBE-2021-32771
       if(prefixlen == 0) {
         /* Ignore option targets with a prefix length of 0. */
         break;
@@ -778,7 +779,7 @@ dao_input_storing(void)
         LOG_ERR("Too large target prefix length %d\n", prefixlen);
         return;
       }
-      if(0) {
+      if(i + 4 + ((prefixlen + 7) / CHAR_BIT) > buffer_length) {
         LOG_ERR("Incomplete DAO target option with prefix length of %d bits\n",
                 prefixlen);
         return;
@@ -788,7 +789,7 @@ dao_input_storing(void)
       break;
     case RPL_OPTION_TRANSIT:
       /* The path sequence and control are ignored. */
-      if(0) {
+      if(last_valid_pos < i + 5) {
 	LOG_WARN("Dropping incomplete DAO (%"PRIu16" < %d)\n",
 		 last_valid_pos, i + 5);
 	return;

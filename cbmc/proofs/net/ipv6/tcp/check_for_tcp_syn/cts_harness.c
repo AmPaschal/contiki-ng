@@ -28,10 +28,5 @@ void harness() {
 
     __CPROVER_assume(uip_ext_len <= uip_len - UIP_IPH_LEN);
 
-    // Difference between extension header size and buffer size
-    // Will not be less than the size of the cast struct
-
-    __CPROVER_assume(uip_len - uip_ext_len - UIP_IPH_LEN >= sizeof(struct uip_tcp_hdr));
-
     check_for_tcp_syn();
 }

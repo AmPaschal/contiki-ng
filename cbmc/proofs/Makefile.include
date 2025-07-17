@@ -17,6 +17,7 @@ C_DEF = \
 C_CBMCFLAGS = \
 	--object-bits $(OBJ_BITS) \
 	--32 \
+	--unwind 1 \
 	--verbosity 9 \
 	--bounds-check \
 	--pointer-check \

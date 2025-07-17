@@ -12,10 +12,6 @@
 #include "contiki.h"
 #include "net/app-layer/snmp/snmp.h"
 #include "net/app-layer/snmp/snmp-ber.h"
-#include "net/ipv6/uipopt.h"
-#include "net/ipv6/uip.h"
-
-#include "snmp-generic.h"
 
 void harness() {
 
@@ -24,7 +20,12 @@ void harness() {
 
     // Initialize:
 
-    init_packet_in(&pack);
+    // init_packet_in(&pack);
+    int size;
+    pack.in = (uint8_t *) malloc(sizeof(uint8_t) * size);
+
+    __CPROVER_assume(pack.in != NULL);
+    pack.used = size;
 
     // Define an unconstrained type and output:
 

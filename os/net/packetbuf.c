@@ -52,7 +52,7 @@ struct packetbuf_attr packetbuf_attrs[PACKETBUF_NUM_ATTRS];
 struct packetbuf_addr packetbuf_addrs[PACKETBUF_NUM_ADDRS];
 
 
-static uint16_t buflen, bufptr;
+uint16_t buflen, bufptr;
 static uint8_t hdrlen;
 
 /* The declarations below ensure that the packet buffer is aligned on

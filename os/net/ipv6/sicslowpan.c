@@ -259,7 +259,7 @@ struct sicslowpan_frag_info {
   uint8_t first_frag[SICSLOWPAN_FIRST_FRAGMENT_SIZE];
 };
 
-static struct sicslowpan_frag_info frag_info[SICSLOWPAN_REASS_CONTEXTS];
+struct sicslowpan_frag_info frag_info[SICSLOWPAN_REASS_CONTEXTS];
 
 struct sicslowpan_frag_buf {
   /* the index of the frag_info */
@@ -271,7 +271,7 @@ struct sicslowpan_frag_buf {
   uint8_t data[SICSLOWPAN_FRAGMENT_SIZE];
 };
 
-static struct sicslowpan_frag_buf frag_buf[SICSLOWPAN_FRAGMENT_BUFFERS];
+struct sicslowpan_frag_buf frag_buf[SICSLOWPAN_FRAGMENT_BUFFERS];
 
 /*---------------------------------------------------------------------------*/
 static int
@@ -453,7 +453,7 @@ copy_frags2uip(int context)
 /*-------------------------------------------------------------------------*/
 /* Basic netstack sniffer */
 /*-------------------------------------------------------------------------*/
-static struct netstack_sniffer *callback = NULL;
+struct netstack_sniffer *callback = NULL;
 
 void
 netstack_sniffer_add(struct netstack_sniffer *s)
@@ -1850,7 +1850,7 @@ output(const linkaddr_t *localdest)
  * \note We do not check for overlapping sicslowpan fragments
  * (it is a SHALL in the RFC 4944 and should never happen)
  */
-static void
+void
 input(void)
 {
   /* size of the IP packet (read from fragment) */
@@ -2044,10 +2044,10 @@ input(void)
   /* copy the payload if buffer is non-null - which is only the case with first fragment
      or packets that are non fragmented */
   if(buffer != NULL) {
-    if(uncomp_hdr_len + packetbuf_payload_len > buffer_size) {
-      LOG_ERR("input: cannot copy the payload into the buffer\n");
-      return;
-    }
+    // if(uncomp_hdr_len + packetbuf_payload_len > buffer_size) {
+    //   LOG_ERR("input: cannot copy the payload into the buffer\n");
+    //   return;
+    // }
     memcpy((uint8_t *)buffer + uncomp_hdr_len, packetbuf_ptr + packetbuf_hdr_len, packetbuf_payload_len);
   }
 

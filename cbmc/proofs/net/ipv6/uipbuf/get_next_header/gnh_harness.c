@@ -19,9 +19,14 @@ void harness() {
 
     uint16_t isize;
 
+    // Unconstrained bool:
+
+    bool start;
+
     // Define minimum size:
 
-    // __CPROVER_assume(isize >= sizeof(struct uip_ip_hdr));
+    __CPROVER_assume(!start || isize >= sizeof(struct uip_ip_hdr));
+    __CPROVER_assume(start || isize >= sizeof(struct uip_ext_hdr));
 
     // Allocate buffer of unconstrained size:
 
@@ -34,10 +39,6 @@ void harness() {
     // Define unconstrained protocol char
 
     uint8_t proto = 0;
-
-    // Unconstrained bool:
-
-    bool start;
 
     uipbuf_get_next_header(buff, isize, &proto, start);
 }

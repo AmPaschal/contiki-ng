@@ -511,7 +511,7 @@ addr_contexts[SICSLOWPAN_CONF_MAX_ADDR_CONTEXTS];
 #endif
 
 /** pointer to the byte where to write next inline field. */
-static uint8_t *iphc_ptr;
+uint8_t *iphc_ptr;
 
 /* Uncompression of linklocal */
 /*   0 -> 16 bytes from packet  */
@@ -607,7 +607,7 @@ compress_addr_64(uint8_t bitpos, uip_ipaddr_t *ipaddr,
  * pref_post_count takes a byte where the first nibble specify prefix count
  * and the second postfix count (NOTE: 15/0xf => 16 bytes copy).
  */
-static bool
+bool
 uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
                 uint8_t pref_post_count, uip_lladdr_t *lladdr)
 {

@@ -11,9 +11,18 @@
 
 #include "contiki.h"
 #include "net/ipv6/sicslowpan.h"
+#include <stdlib.h>
 
 // Pointer to data to uncompress
 extern uint8_t *iphc_ptr;
+extern uint8_t *packetbuf_ptr;
+
+static uint16_t buflen;
+
+uint16_t
+packetbuf_datalen(void) {
+    return buflen;
+}
 
 void harness() {
 
@@ -48,14 +57,16 @@ void harness() {
 
     uint8_t const prefix[pre];
 
-    // Allocate source address data:
-    // To test vulnerability, make 'post' be unconstrained uint8_t
+    uint16_t len;
 
-    iphc_ptr = (uint8_t*)malloc(sizeof(uint8_t) * post);
+    packetbuf_ptr = malloc(len);
+    __CPROVER_assume(packetbuf_ptr != NULL);
+    buflen = len;
 
-    // Won't be NULL:
+    uint16_t iphc_offset;
+    __CPROVER_assume(iphc_offset < len);
+    iphc_ptr = packetbuf_ptr + iphc_offset;
 
-    __CPROVER_assume(iphc_ptr != NULL);
 
     uncompress_addr(&ipaddr, prefix, prefix_counts, &lladdr);
 }

@@ -20,8 +20,7 @@
 extern uint16_t uip_len;
 extern uint16_t uip_ext_len;  // Define header extension length
 
-const uip_ipaddr_t *
-uip_ds6_route_nexthop(uip_ds6_route_t *route) {
+const uip_ipaddr_t *uip_ds6_route_nexthop(uip_ds6_route_t *route) {
     uip_ipaddr_t *addr = malloc(sizeof(uip_ipaddr_t));
 
     __CPROVER_assume(addr != NULL);
@@ -29,8 +28,7 @@ uip_ds6_route_nexthop(uip_ds6_route_t *route) {
     return addr;
 }
 
-rpl_instance_t *
-rpl_get_instance(uint8_t instance_id) {
+rpl_instance_t *rpl_get_instance(uint8_t instance_id) {
 
     bool thing;
 
@@ -64,8 +62,7 @@ rpl_get_instance(uint8_t instance_id) {
     return inst;
 }
 
-rpl_parent_t *
-rpl_find_parent(rpl_dag_t *dag, uip_ipaddr_t *addr) {
+rpl_parent_t *rpl_find_parent(rpl_dag_t *dag, uip_ipaddr_t *addr) {
 
     // Allocate parent:
 
@@ -74,8 +71,7 @@ rpl_find_parent(rpl_dag_t *dag, uip_ipaddr_t *addr) {
     return p;
 }
 
-uip_ds6_route_t *
-uip_ds6_route_lookup(const uip_ipaddr_t *addr) {
+uip_ds6_route_t *uip_ds6_route_lookup(const uip_ipaddr_t *addr) {
 
     bool thing;
     // Allocate data for route:
@@ -85,8 +81,7 @@ uip_ds6_route_lookup(const uip_ipaddr_t *addr) {
     return thing ? NULL : route;
 }
 
-uip_ds6_route_t *
-rpl_add_route(rpl_dag_t *dag, uip_ipaddr_t *prefix, int prefix_len,
+uip_ds6_route_t *rpl_add_route(rpl_dag_t *dag, uip_ipaddr_t *prefix, int prefix_len,
               uip_ipaddr_t *next_hop) {
 
     // Just create an unconstrained ds6 route:

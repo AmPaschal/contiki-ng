@@ -82,8 +82,7 @@ void harness() {
 
     uint8_t space = UIP_IPH_LEN + sizeof(struct uip_icmp_hdr) + sizeof(uip_nd6_opt_hdr) + UIP_ND6_RS_LEN;
 
-    __CPROVER_assume(uip_ext_len + space > uip_ext_len &&
-                        uip_ext_len + space <= uip_len);
+    __CPROVER_assume(uip_ext_len + space > uip_ext_len && uip_ext_len + space <= uip_len);
 
     rs_input();
 }

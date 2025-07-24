@@ -19,8 +19,7 @@
 extern uint16_t uip_len;
 extern uip_buf_t uip_aligned_buf;
 
-uint8_t *
-uipbuf_search_header(uint8_t *buffer, uint16_t size, uint8_t protocol) {
+uint8_t *uipbuf_search_header(uint8_t *buffer, uint16_t size, uint8_t protocol) {
 
     uint16_t offset;
     __CPROVER_assume(offset + sizeof(struct uip_routing_hdr) + sizeof(struct uip_rpl_srh_hdr) < uip_len - 40);

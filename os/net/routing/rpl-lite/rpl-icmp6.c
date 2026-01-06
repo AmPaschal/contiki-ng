@@ -173,7 +173,7 @@ static void
 dio_input(void)
 {
   unsigned char *buffer;
-  uint16_t buffer_length;
+  uint8_t buffer_length;
   rpl_dio_t dio;
   uint8_t subopt_type;
   int i;
@@ -195,12 +195,6 @@ dio_input(void)
   uip_ipaddr_copy(&from, &UIP_IP_BUF->srcipaddr);
 
   buffer_length = uip_len - uip_l3_icmp_hdr_len;
-
-  if(buffer_length < 8 + sizeof(dio.dag_id)) {
-    LOG_WARN("dio_input: invalid DIO header, len %"PRIu16", discard\n",
-             buffer_length);
-    goto discard;
-  }
 
   /* Process the DIO base option. */
   i = 0;
@@ -229,10 +223,6 @@ dio_input(void)
       len = 1;
     } else {
       /* Suboption with a two-byte header + payload */
-      if(i + 1 >= buffer_length) {
-        LOG_ERR("dio_input: malformed packet, discard\n");
-        goto discard;
-      }
       len = 2 + buffer[i + 1];
     }
 
@@ -257,16 +247,8 @@ dio_input(void)
         if(dio.mc.type == RPL_DAG_MC_NONE) {
           /* No metric container: do nothing */
         } else if(dio.mc.type == RPL_DAG_MC_ETX) {
-          if(len < 8) {
-            LOG_WARN("dio_input: invalid DAG MC, len %u, discard\n", len);
-            goto discard;
-          }
           dio.mc.obj.etx = get16(buffer, i + 6);
         } else if(dio.mc.type == RPL_DAG_MC_ENERGY) {
-          if(len < 8) {
-            LOG_WARN("dio_input: invalid DAG MC, len %u, discard\n", len);
-            goto discard;
-          }
           dio.mc.obj.energy.flags = buffer[i + 6];
           dio.mc.obj.energy.energy_est = buffer[i + 7];
         } else {
@@ -275,9 +257,8 @@ dio_input(void)
         }
         break;
       case RPL_OPTION_ROUTE_INFO:
-        if(len < 8) {
-          LOG_WARN("dio_input: invalid route info option, len %u, discard\n",
-                   len);
+        if(len < 9) {
+          LOG_WARN("dio_input: invalid destination prefix option, len %u, discard\n", len);
           goto discard;
         }
 
@@ -319,11 +300,6 @@ dio_input(void)
           goto discard;
         }
         dio.prefix_info.length = buffer[i + 2];
-        if(dio.prefix_info.length > sizeof(uip_ipaddr_t) * 8) {
-          LOG_WARN("dio_input: invalid DAG prefix info, len %u > %zu\n",
-                   dio.prefix_info.length, sizeof(uip_ipaddr_t) * 8);
-          goto discard;
-        }
 
         dio.prefix_info.flags = buffer[i + 3];
         /* valid lifetime is ingnored for now - at i + 4 */

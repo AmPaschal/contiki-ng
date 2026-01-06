@@ -470,13 +470,6 @@ dio_input(void)
       }
       dio.prefix_info.length = buffer[i + 2];
 
-      if(dio.prefix_info.length > sizeof(uip_ipaddr_t) * 8) {
-        LOG_WARN("Invalid DAG prefix info, len %u > %u\n",
-                 dio.prefix_info.length, (unsigned)(sizeof(uip_ipaddr_t) * 8));
-        RPL_STAT(rpl_stats.malformed_msgs++);
-        goto discard;
-      }
-
       dio.prefix_info.flags = buffer[i + 3];
       /* valid lifetime is ingnored for now - at i + 4 */
       /* preferred lifetime stored in lifetime */
@@ -675,6 +668,7 @@ dao_input_storing(void)
   uint8_t subopt_type;
   uip_ipaddr_t prefix;
   uip_ds6_route_t *rep;
+  uint8_t buffer_length;
   int pos;
   int len;
   int i;
@@ -690,14 +684,7 @@ dao_input_storing(void)
   uip_ipaddr_copy(&dao_sender_addr, &UIP_IP_BUF->srcipaddr);
 
   buffer = UIP_ICMP_PAYLOAD;
-  uint16_t buffer_length = uip_len - uip_l3_icmp_hdr_len;
-  if(buffer_length < 4) {
-    LOG_WARN("Dropping incomplete DAO (%" PRIu16 " < %d)\n",
-             buffer_length, 4);
-    return;
-  }
-
-  uint16_t last_valid_pos = buffer_length - 1;
+  buffer_length = uip_len - uip_l3_icmp_hdr_len;
 
   pos = 0;
   instance_id = buffer[pos++];
@@ -719,11 +706,6 @@ dao_input_storing(void)
 
   /* Is the DAG ID present? */
   if(flags & RPL_DAO_D_FLAG) {
-    if(last_valid_pos < pos + 16) {
-      LOG_WARN("Dropping incomplete DAO (%" PRIu16 " < %d)\n",
-               last_valid_pos, pos + 16);
-      return;
-    }
 
     if(memcmp(&dag->dag_id, &buffer[pos], sizeof(dag->dag_id))) {
       LOG_INFO("Ignoring a DAO for a DAG different from ours\n");
@@ -789,29 +771,11 @@ dao_input_storing(void)
         return;
       }
       prefixlen = buffer[i + 3];
-      if(prefixlen == 0) {
-        /* Ignore option targets with a prefix length of 0. */
-        break;
-      }
-      if(prefixlen > 128) {
-        LOG_ERR("Too large target prefix length %d\n", prefixlen);
-        return;
-      }
-      if(i + 4 + ((prefixlen + 7) / CHAR_BIT) > buffer_length) {
-        LOG_ERR("Incomplete DAO target option with prefix length of %d bits\n",
-                prefixlen);
-        return;
-      }
       memset(&prefix, 0, sizeof(prefix));
       memcpy(&prefix, buffer + i + 4, (prefixlen + 7) / CHAR_BIT);
       break;
     case RPL_OPTION_TRANSIT:
       /* The path sequence and control are ignored. */
-      if(last_valid_pos < i + 5) {
-        LOG_WARN("Dropping incomplete DAO (%" PRIu16 " < %d)\n",
-                 last_valid_pos, i + 5);
-        return;
-      }
       lifetime = buffer[i + 5];
       /* The parent address is also ignored. */
       break;
@@ -1059,11 +1023,6 @@ dao_input_nonstoring(void)
     switch(subopt_type) {
     case RPL_OPTION_TARGET:
       /* Handle the target option. */
-      if(last_valid_pos < i + 3) {
-        LOG_WARN("Dropping incomplete DAO (%" PRIu16 " < %d)\n",
-                 last_valid_pos, i + 3);
-        return;
-      }
       prefixlen = buffer[i + 3];
       if(prefixlen == 0) {
         /* Ignore option targets with a prefix length of 0. */

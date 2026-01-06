@@ -344,7 +344,7 @@ error:
 db_result_t
 storage_get_index(index_t *index, relation_t *rel, attribute_t *attr)
 {
-  char filename[INDEX_NAME_LENGTH + 1];
+  char filename[INDEX_NAME_LENGTH];
   int fd;
   int r;
   struct index_record record;

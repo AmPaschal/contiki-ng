@@ -198,7 +198,7 @@ ns_input(void)
   /* Options processing */
   nd6_opt_llao = NULL;
   nd6_opt_offset = UIP_ND6_NS_LEN;
-  while(uip_l3_icmp_hdr_len + nd6_opt_offset + UIP_ND6_OPT_HDR_LEN < uip_len) {
+  while(uip_l3_icmp_hdr_len + nd6_opt_offset < uip_len) {
     if(ND6_OPT_HDR_BUF(nd6_opt_offset)->len == 0) {
       LOG_ERR("Discarding invalid NS\n");
       goto discard;
@@ -206,11 +206,6 @@ ns_input(void)
 
     switch(ND6_OPT_HDR_BUF(nd6_opt_offset)->type) {
     case UIP_ND6_OPT_SLLAO:
-      if(uip_l3_icmp_hdr_len + nd6_opt_offset +
-         UIP_ND6_OPT_DATA_OFFSET + UIP_LLADDR_LEN > uip_len) {
-        LOG_ERR("Insufficient data for NS SLLAO option\n");
-        goto discard;
-      }
       nd6_opt_llao = &uip_buf[uip_l3_icmp_hdr_len + nd6_opt_offset];
 
       /* There must be NO option in a DAD NS */
@@ -670,9 +665,6 @@ rs_input(void)
           uip_ds6_nbr_rm(nbr);
           nbr = uip_ds6_nbr_add(&UIP_IP_BUF->srcipaddr, &lladdr_aligned,
                                 0, NBR_STALE, NBR_TABLE_REASON_IPV6_ND, NULL);
-          if(nbr == NULL) {
-            goto discard;
-          }
           nbr->reachable = nbr_data.reachable;
           nbr->sendns = nbr_data.sendns;
           nbr->nscount = nbr_data.nscount;

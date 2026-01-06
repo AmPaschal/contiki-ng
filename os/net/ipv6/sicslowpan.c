@@ -627,11 +627,6 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
     memset(&ipaddr->u8[prefcount], 0, 16 - (prefcount + postcount));
   }
   if(postcount > 0) {
-    if((iphc_ptr - packetbuf_ptr) + postcount > packetbuf_datalen()) {
-      LOG_WARN("Insufficient packet data to decompress IP address\n");
-      return false;
-    }
-
     memcpy(&ipaddr->u8[16 - postcount], iphc_ptr, postcount);
     if(postcount == 2 && prefcount < 11) {
       /* 16 bits uncompression => 0000:00ff:fe00:XXXX */
@@ -1078,22 +1073,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
   uint8_t* last_nextheader;
   uint8_t* ip_payload;
   uint8_t ext_hdr_len = 0;
-  uint16_t cmpr_len;
 
-/* Macro used only internally, during header uncompression. Checks if there
- * is sufficient space in packetbuf before reading any further. */
-#define CHECK_READ_SPACE(readlen) \
-  if((iphc_ptr - packetbuf_ptr) + (readlen) > cmpr_len) { \
-    LOG_WARN("Not enough packetbuf space to decompress header (%u bytes, %u left). Aborting.\n", \
-             (unsigned)(readlen), (unsigned)(cmpr_len - (iphc_ptr - packetbuf_ptr))); \
-    return false; \
-  }
-
-  /* at least two byte will be used for the encoding */
-  cmpr_len = packetbuf_datalen();
-  if(cmpr_len < packetbuf_hdr_len + 2) {
-    return false;
-  }
   iphc_ptr = packetbuf_ptr + packetbuf_hdr_len + 2;
 
   iphc0 = PACKETBUF_IPHC_BUF[0];
@@ -1110,7 +1090,6 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
       /* Flow label are carried inline */
       if((iphc0 & SICSLOWPAN_IPHC_TC_C) == 0) {
         /* Traffic class is carried inline */
-        CHECK_READ_SPACE(4);
         memcpy(&SICSLOWPAN_IP_BUF(buf)->tcflow, iphc_ptr + 1, 3);
         tmp = *iphc_ptr;
         iphc_ptr += 4;
@@ -1339,17 +1318,10 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
   /* The next header is compressed, NHC is following */
   CHECK_READ_SPACE(1);
   if(nhc && (*iphc_ptr & SICSLOWPAN_NHC_UDP_MASK) == SICSLOWPAN_NHC_UDP_ID) {
-    struct uip_udp_hdr *udp_buf;
+    struct uip_udp_hdr *udp_buf = (struct uip_udp_hdr *)ip_payload;
     uint16_t udp_len;
     uint8_t checksum_compressed;
 
-    /* Check that there is enough room to write the UDP header. */
-    if((ip_payload - buf) + UIP_UDPH_LEN > buf_size) {
-      LOG_WARN("uncompression: cannot write UDP header beyond target buffer\n");
-      return false;
-    }
-
-    udp_buf = (struct uip_udp_hdr *)ip_payload;
     *last_nextheader = UIP_PROTO_UDP;
     checksum_compressed = *iphc_ptr & SICSLOWPAN_NHC_UDP_CHECKSUMC;
     LOG_DBG("uncompression: incoming header value: %i\n", *iphc_ptr);
@@ -2040,10 +2012,6 @@ input(void)
   /* copy the payload if buffer is non-null - which is only the case with first fragment
      or packets that are non fragmented */
   if(buffer != NULL) {
-    if(uncomp_hdr_len + packetbuf_payload_len > buffer_size) {
-      LOG_ERR("input: cannot copy the payload into the buffer\n");
-      return;
-    }
     memcpy((uint8_t *)buffer + uncomp_hdr_len, packetbuf_ptr + packetbuf_hdr_len, packetbuf_payload_len);
   }
 

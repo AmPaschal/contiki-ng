@@ -74,10 +74,6 @@ merge_strings(char *dest, size_t dest_size, char *prefix, char *suffix)
   size_t prefix_len = strlen(prefix);
   size_t suffix_len = strlen(suffix);
 
-  if(dest_size < prefix_len + suffix_len + 1) {
-    return false;
-  }
-
   memcpy(dest, prefix, prefix_len);
   memcpy(dest + prefix_len, suffix, suffix_len);
   dest[prefix_len + suffix_len] = '\0';

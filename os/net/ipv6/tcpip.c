@@ -148,7 +148,7 @@ start_periodic_tcp_timer(void)
 static void
 check_for_tcp_syn(void)
 {
-#if UIP_TCP
+// #if UIP_TCP
   /* This is a hack that is needed to start the periodic TCP timer if
      an incoming packet contains a SYN: since uIP does not inform the
      application if a SYN arrives, we have no other way of starting
@@ -159,7 +159,7 @@ check_for_tcp_syn(void)
      (UIP_TCP_BUF->flags & TCP_SYN) == TCP_SYN) {
     start_periodic_tcp_timer();
   }
-#endif /* UIP_TCP */
+// #endif /* UIP_TCP */
 }
 /*---------------------------------------------------------------------------*/
 static void
